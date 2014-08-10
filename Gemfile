@@ -30,6 +30,7 @@ gem "sentry-raven"
 gem "stripe"
 gem "uglifier", ">= 1.0.3"
 gem "unicorn"
+gem "dotenv-deployment"
 
 group :development, :test do
   gem 'byebug'

@@ -44,14 +44,14 @@ set :scm, :git
 set :runner, ->{ "RAILS_ENV=#{fetch(:stage)} bundle exec" }
 set :log_level, :info
 
-set :linked_files, %w{config/database.yml}
+set :linked_files, %w{config/database.yml .env}
 set :linked_dirs, %w{bin log tmp}
 
 namespace :deploy do
   desc "Setup a GitHub-style deployment"
   task :setup do
     on roles(:all) do
-      dirs = [deploy_to, shared_path, current_path]
+      dirs = [deploy_to, shared_path]
       dirs += fetch(:linked_dirs).map { |d| File.join(shared_path, d) }
       execute "mkdir -p #{dirs.join(' ')} && chmod g+w #{dirs.join(' ')}"
       execute "ssh-keyscan github.com >> /home/#{fetch(:user)}/.ssh/known_hosts"
