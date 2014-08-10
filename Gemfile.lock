@@ -318,6 +318,7 @@ DEPENDENCIES
   coffee-rails
   dalli
   database_cleaner
+  dotenv
   dotenv-deployment
   factory_girl_rails
   faraday-http-cache

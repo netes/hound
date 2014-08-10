@@ -30,18 +30,22 @@ gem "sentry-raven"
 gem "stripe"
 gem "uglifier", ">= 1.0.3"
 gem "unicorn"
+gem "dotenv"
 gem "dotenv-deployment"
 
-group :development, :test do
-  gem 'byebug'
+group :development do
   gem 'foreman'
-  gem 'poltergeist'
-  gem 'rspec-rails', '>= 2.14'
 
   gem 'capistrano', require: false
   gem 'capistrano-rvm', require: false
   gem 'capistrano-resque', require: false
   gem 'capistrano-rails', require: false
+end
+
+group :development, :test do
+  gem 'byebug'
+  gem 'poltergeist'
+  gem 'rspec-rails', '>= 2.14'
 end
 
 group :test do
