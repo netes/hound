@@ -8,5 +8,3 @@ require "capistrano/rvm"
 require "capistrano/bundler"
 require "capistrano/rails"
 require "capistrano-resque"
-
-# load "config/deploy"

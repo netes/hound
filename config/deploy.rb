@@ -6,17 +6,8 @@ lock '3.2.1'
 # Default value for :format is :pretty
 # set :format, :pretty
 
-# Default value for :log_level is :debug
-# set :log_level, :debug
-
 # Default value for :pty is false
 # set :pty, true
-
-# Default value for :linked_files is []
-# set :linked_files, %w{config/database.yml}
-
-# Default value for linked_dirs is []
-# set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -38,14 +29,23 @@ set :rvm_type, :system
 branches = { production: :production, beta: :beta, staging: :master }
 set :branch, ->{ branches[fetch(:stage).to_sym].to_s }
 
-set :remote, "origin"
-set :current_revision, ->{ capture("cd #{current_path}; git rev-parse HEAD").strip }
 set :scm, :git
-set :runner, ->{ "RAILS_ENV=#{fetch(:stage)} bundle exec" }
-set :log_level, :info
+set :log_level, :debug
 
 set :linked_files, %w{config/database.yml .env}
 set :linked_dirs, %w{bin log tmp}
 
+set :resque_log_file, "log/resque.log"
+
+set :workers, { high: 1, medium: 1, low: 1 }
+
+namespace :deploy do
+  task :restart do
+    on roles(:app) do
+      execute "touch #{current_path}/tmp/restart.txt"
+    end
+  end
+end
+
 after "deploy:publishing", "deploy:restart"
-after "deploy:publishing", "resque:restart"
+after "deploy:restart", "resque:restart"
