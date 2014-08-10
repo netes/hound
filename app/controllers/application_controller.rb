@@ -40,7 +40,6 @@ class ApplicationController < ActionController::Base
   end
 
   def report_exception(exception, metadata)
-    Raven.capture_exception(exception, extra: metadata)
   end
 
   protected

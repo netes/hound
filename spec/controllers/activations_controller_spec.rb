@@ -36,21 +36,5 @@ describe ActivationsController, '#create' do
         AuthenticationHelper::GITHUB_TOKEN
       )
     end
-
-    it 'notifies Sentry' do
-      membership = create(:membership)
-      repo = membership.repo
-      activator = double(:repo_activator, activate: false)
-      RepoActivator.stub(new: activator)
-      Raven.stub(:capture_exception)
-      stub_sign_in(membership.user)
-
-      post :create, repo_id: repo.id, format: :json
-
-      expect(Raven).to have_received(:capture_exception).with(
-        ActivationsController::FailedToActivate.new('Failed to activate repo'),
-        extra: { repo_id: repo.id.to_s }
-      )
-    end
   end
 end

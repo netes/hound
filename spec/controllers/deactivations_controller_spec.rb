@@ -36,23 +36,5 @@ describe DeactivationsController, '#create' do
         AuthenticationHelper::GITHUB_TOKEN
       )
     end
-
-    it 'notifies Sentry' do
-      membership = create(:membership)
-      repo = membership.repo
-      activator = double(:repo_activator, deactivate: false)
-      RepoActivator.stub(new: activator)
-      Raven.stub(:capture_exception)
-      stub_sign_in(membership.user)
-
-      post :create, repo_id: repo.id, format: :json
-
-      expect(Raven).to have_received(:capture_exception).with(
-        DeactivationsController::FailedToActivate.new(
-          'Failed to deactivate repo'
-        ),
-        extra: { repo_id: repo.id.to_s }
-      )
-    end
   end
 end

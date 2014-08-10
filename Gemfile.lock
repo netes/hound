@@ -205,9 +205,6 @@ GEM
       redis (>= 3.0.0)
       resque (>= 1.20.0, < 1.25)
       rufus-scheduler (~> 2.0)
-    resque-sentry (1.2.0)
-      resque (>= 1.18.0)
-      sentry-raven (>= 0.4.6)
     rspec-core (2.14.7)
     rspec-expectations (2.14.3)
       diff-lcs (>= 1.1.3, < 2.0)
@@ -244,10 +241,6 @@ GEM
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0.4)
-    sentry-raven (0.7.1)
-      faraday (>= 0.7.6)
-      hashie (>= 1.1.0)
-      uuidtools
     shoulda-matchers (2.6.1)
       activesupport (>= 3.0.0)
     sinatra (1.4.5)
@@ -283,7 +276,6 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
-    uuidtools (2.1.4)
     vegas (0.1.11)
       rack (>= 1.0.0)
     webmock (1.18.0)
@@ -331,12 +323,10 @@ DEPENDENCIES
   rails (= 4.0.4)
   resque (~> 1.22.0)
   resque-retry
-  resque-sentry
   rspec-rails (>= 2.14)
   rubocop (= 0.24.1)
   sass-rails (~> 4.0.2)
   selenium-webdriver
-  sentry-raven
   shoulda-matchers
   uglifier (>= 1.0.3)
   unicorn
