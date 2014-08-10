@@ -30,7 +30,7 @@ branches = { production: :production, beta: :beta, staging: :master }
 set :branch, ->{ branches[fetch(:stage).to_sym].to_s }
 
 set :scm, :git
-set :log_level, :debug
+set :log_level, :info
 
 set :linked_files, %w{config/database.yml .env}
 set :linked_dirs, %w{bin log tmp}
