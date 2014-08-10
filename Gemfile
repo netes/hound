@@ -30,24 +30,24 @@ gem "stripe"
 gem "uglifier", ">= 1.0.3"
 gem "unicorn"
 
-group :staging, :production do
-  gem "rails_12factor"
-end
-
 group :development, :test do
-  gem "byebug"
-  gem "foreman"
-  gem "konacha"
-  gem "poltergeist"
-  gem "rspec-rails", ">= 2.14"
+  gem 'byebug'
+  gem 'foreman'
+  gem 'poltergeist'
+  gem 'rspec-rails', '>= 2.14'
+
+  gem 'capistrano', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-resque', require: false
+  gem 'capistrano-rails', require: false
 end
 
 group :test do
-  gem "capybara", "~> 2.1.0"
-  gem "capybara-webkit", "~> 1.1.1"
-  gem "database_cleaner"
-  gem "factory_girl_rails"
-  gem "launchy"
-  gem "shoulda-matchers"
-  gem "webmock"
+  gem 'capybara', '~> 2.1.0'
+  gem 'selenium-webdriver'
+  gem 'database_cleaner'
+  gem 'factory_girl_rails'
+  gem 'launchy'
+  gem 'shoulda-matchers'
+  gem 'webmock'
 end
