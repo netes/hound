@@ -47,44 +47,5 @@ set :log_level, :info
 set :linked_files, %w{config/database.yml .env}
 set :linked_dirs, %w{bin log tmp}
 
-namespace :deploy do
-  desc "Setup a GitHub-style deployment"
-  task :setup do
-    on roles(:all) do
-      dirs = [deploy_to, shared_path]
-      dirs += fetch(:linked_dirs).map { |d| File.join(shared_path, d) }
-      execute "mkdir -p #{dirs.join(' ')} && chmod g+w #{dirs.join(' ')}"
-      execute "ssh-keyscan github.com >> /home/#{fetch(:user)}/.ssh/known_hosts"
-      execute "git clone #{fetch(:repo_url)} #{current_path}"
-      execute "cd #{current_path} && git branch --track #{fetch(:branch)} #{fetch(:remote)}/#{fetch(:branch)}; git checkout #{fetch(:branch)}"
-    end
-  end
-
-  task :default do
-    on roles(:web) do
-      transaction do
-        update
-        migrate
-        restart
-      end
-    end
-  end
-
-  desc "Update the deployed code"
-  task :update do
-    on roles(:web) do
-      execute "cd #{current_path} && git checkout #{fetch(:branch)} && git pull origin #{fetch(:branch)}"
-    end
-  end
-
-  desc "Restarts app"
-  task :restart do
-    on roles(:web) do
-      execute "touch #{current_path}/tmp/restart.txt"
-    end
-  end
-end
-
-after "deploy:update", "bundler:install"
-after "deploy:update", "deploy:assets:precompile"
-after "deploy:restart", "resque:restart"
+after "deploy:publishing", "deploy:restart"
+after "deploy:publishing", "resque:restart"
