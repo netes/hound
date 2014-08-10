@@ -20,7 +20,7 @@ RSpec.configure do |config|
 end
 
 Capybara.configure do |config|
-  config.javascript_driver = :webkit
+  config.javascript_driver = :selenium
 end
 
 OmniAuth.configure do |config|
