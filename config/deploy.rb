@@ -42,6 +42,10 @@ set :remote, "origin"
 set :current_revision, ->{ capture("cd #{current_path}; git rev-parse HEAD").strip }
 set :scm, :git
 set :runner, ->{ "RAILS_ENV=#{fetch(:stage)} bundle exec" }
+set :log_level, :info
+
+set :linked_files, %w{config/database.yml}
+set :linked_dirs, %w{bin log tmp}
 
 namespace :deploy do
   desc "Setup a GitHub-style deployment"
