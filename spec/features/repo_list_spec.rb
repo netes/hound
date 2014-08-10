@@ -1,9 +1,9 @@
-require "spec_helper"
+require 'spec_helper'
 
 feature "Repo list", js: true do
   scenario "user views list", pending: true do
     user = create(:user)
-    repo = create(:repo, full_github_name: "thoughtbot/my-repo")
+    repo = create(:repo, full_github_name: 'thoughtbot/my-repo')
     repo.users << user
     stub_user_emails_request(AuthenticationHelper::GITHUB_TOKEN)
     sign_in_as(user)
@@ -15,13 +15,13 @@ feature "Repo list", js: true do
 
   scenario "user filters list", pending: true do
     user = create(:user)
-    repo = create(:repo, full_github_name: "thoughtbot/my-repo")
+    repo = create(:repo, full_github_name: 'thoughtbot/my-repo')
     repo.users << user
     stub_user_emails_request(AuthenticationHelper::GITHUB_TOKEN)
     sign_in_as(user)
 
     visit root_path
-    find(".search").set(repo.full_github_name)
+    find('.search').set(repo.full_github_name)
 
     expect(page).to have_content repo.full_github_name
   end
@@ -38,51 +38,51 @@ feature "Repo list", js: true do
 
     expect(page).to have_content(repo.full_github_name)
 
-    click_link I18n.t("sync_repos")
+    click_link I18n.t('sync_repos')
 
-    expect(page).to have_content I18n.t("syncing_repos").upcase
-    expect(page).not_to have_content "jimtom/My-Private-Repo"
+    expect(page).to have_content I18n.t('syncing_repos').upcase
+    expect(page).not_to have_content 'jimtom/My-Private-Repo'
   end
 
-  scenario "user signs up" do
+  scenario 'user signs up' do
     with_job_delay do
       user = create(:user)
 
       sign_in_as(user)
 
-      expect(page).to have_content I18n.t("syncing_repos").upcase
+      expect(page).to have_content I18n.t('syncing_repos').upcase
     end
   end
 
-  scenario "user activates repo" do
+  scenario 'user activates repo' do
     user = create(:user)
-    repo = create(:repo, private: false)
+    repo = create(:repo)
     repo.users << user
-    hook_url = "http://#{ENV["HOST"]}/builds"
+    hook_url = "http://#{ENV['HOST']}/builds"
     stub_repo_request(repo.full_github_name)
     stub_add_collaborator_request(repo.full_github_name)
     stub_hook_creation_request(repo.full_github_name, hook_url)
     stub_user_emails_request(AuthenticationHelper::GITHUB_TOKEN)
 
     sign_in_as(user)
-    find("li.repo .toggle").click
+    find(".repos .toggle").click
 
-    expect(page).to have_css(".active")
-    expect(page).to have_content "1 OF 1"
+    expect(page).to have_css('.active')
+    expect(page).to have_content '1 OF 1'
 
     visit root_path
 
-    expect(page).to have_css(".active")
-    expect(page).to have_content "1 OF 1"
+    expect(page).to have_css('.active')
+    expect(page).to have_content '1 OF 1'
   end
 
-  scenario "user with admin access activates organization repo" do
+  scenario 'user with admin access activates organization repo' do
     user = create(:user)
-    repo = create(:repo, private: false, full_github_name: "testing/repo")
+    repo = create(:repo, full_github_name: 'testing/repo')
     repo.users << user
-    hook_url = "http://#{ENV["HOST"]}/builds"
+    hook_url = "http://#{ENV['HOST']}/builds"
     team_id = 4567 # from fixture
-    hound_user = "houndci"
+    hound_user = 'houndci'
     stub_repo_with_org_request(repo.full_github_name)
     stub_hook_creation_request(repo.full_github_name, hook_url)
     stub_repo_teams_request(repo.full_github_name)
@@ -93,13 +93,13 @@ feature "Repo list", js: true do
     sign_in_as(user)
     find(".repos .toggle").click
 
-    expect(page).to have_css(".active")
-    expect(page).to have_content "1 OF 1"
+    expect(page).to have_css('.active')
+    expect(page).to have_content '1 OF 1'
 
     visit root_path
 
-    expect(page).to have_css(".active")
-    expect(page).to have_content "1 OF 1"
+    expect(page).to have_css('.active')
+    expect(page).to have_content '1 OF 1'
   end
 
   scenario "user deactivates repo", pending: true do
@@ -113,13 +113,13 @@ feature "Repo list", js: true do
     visit root_path
     find(".repos .toggle").click
 
-    expect(page).not_to have_css(".active")
-    expect(page).to have_content "0 OF 1"
+    expect(page).not_to have_css('.active')
+    expect(page).to have_content '0 OF 1'
 
     visit current_path
 
-    expect(page).not_to have_css(".active")
-    expect(page).to have_content "0 OF 1"
+    expect(page).not_to have_css('.active')
+    expect(page).to have_content '0 OF 1'
   end
 
   private

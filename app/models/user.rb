@@ -3,7 +3,6 @@ class User < ActiveRecord::Base
 
   has_many :memberships
   has_many :repos, through: :memberships
-  has_many :subscriptions
 
   validates :github_username, presence: true
 
@@ -19,10 +18,6 @@ class User < ActiveRecord::Base
 
   def create_github_repo(attributes)
     repos.create(attributes)
-  end
-
-  def has_repos_with_missing_information?
-    repos.where("in_organization IS NULL OR private IS NULL").count > 0
   end
 
   private

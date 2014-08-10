@@ -145,17 +145,9 @@
       font-size: 1.4em;
       font-weight: 300;
       text-overflow: ellipsis;
+      margin-right: 3em;
       overflow: hidden;
       position: relative;
-      padding-left: 1em;
-
-      &.private:before {
-        @include position(absolute, .25em 0 0 0px);
-        content: $icon-lock;
-        font-family: $icon-font;
-        font-size: .8em;
-        opacity: .5;
-      }
     }
 
     .toggle {
@@ -191,7 +183,7 @@
       }
 
       span.name {
-        margin-left: 1em;
+        padding-left: 0.9em;
       }
     }
 
