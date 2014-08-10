@@ -19,6 +19,7 @@ class RepoActivator
   def change_repository_state_quietly
     yield
   rescue Octokit::Error => error
+    Rollbar.report_exception(error)
     false
   end
 

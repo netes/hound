@@ -40,6 +40,7 @@ class ApplicationController < ActionController::Base
   end
 
   def report_exception(exception, metadata)
+    Rollbar.report_exception(exception, metadata)
   end
 
   protected

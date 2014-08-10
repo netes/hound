@@ -28,6 +28,7 @@ gem "uglifier", ">= 1.0.3"
 gem "unicorn"
 gem "dotenv"
 gem "dotenv-deployment"
+gem "rollbar"
 
 group :development do
   gem 'foreman'
