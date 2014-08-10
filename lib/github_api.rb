@@ -150,9 +150,11 @@ class GithubApi
   end
 
   def find_team(name, repo)
-    client.org_teams(repo.organization.login).detect do |team|
-      team.name == name
+    teams = client.org_teams(repo.organization.login, per_page: 100)
+    until team = teams.find{ |t| t.name == name } || teams.count < 100 do
+      teams = client.last_response.rels[:next].get.data
     end
+    team
   end
 
   def create_team(name, repo)
