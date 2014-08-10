@@ -18,7 +18,7 @@ describe StyleChecker, '#violations' do
     style_checker = StyleChecker.new([modified_file1, modified_file2], config)
 
     expect(style_checker.violations).to eq [
-      FileViolation.new(modified_file2.filename, [expected_line_violation])
+      FileViolation.new(modified_file2, [expected_line_violation])
     ]
   end
 

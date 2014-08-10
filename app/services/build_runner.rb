@@ -6,32 +6,27 @@ class BuildRunner
   end
 
   def run
-    if repo && relevant_pull_request?
-      repo.builds.create!(violations: violations)
-      commenter.comment_on_violations(violations, pull_request)
+    if repo && event.valid?
+      commenter.comment_on_violations(violations)
     end
   end
 
   private
-
-  def relevant_pull_request?
-    pull_request.opened? || pull_request.synchronize?
-  end
 
   def violations
     @violations ||= style_checker.violations
   end
 
   def style_checker
-    StyleChecker.new(pull_request.pull_request_files, pull_request.config)
+    StyleChecker.new(event.files, event.config)
   end
 
   def commenter
     Commenter.new
   end
 
-  def pull_request
-    @pull_request ||= PullRequest.new(payload, ENV['HOUND_GITHUB_TOKEN'])
+  def event
+    @event ||= Event.new_from_payload(payload, ENV['HOUND_GITHUB_TOKEN'])
   end
 
   def repo

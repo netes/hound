@@ -1,10 +1,11 @@
 class Commit
-  attr_reader :repo_name, :sha
+  attr_reader :full_repo_name, :sha
 
-  def initialize(repo_name, sha, github)
-    @repo_name = repo_name
+  def initialize(full_repo_name, sha, github, pull_request_number = nil)
+    @full_repo_name = full_repo_name
     @sha = sha
     @github = github
+    @pull_request_number = pull_request_number
   end
 
   def files
@@ -12,12 +13,29 @@ class Commit
   end
 
   def file_content(filename)
-    contents = @github.file_contents(repo_name, filename, sha)
-    if contents && contents.content
-      Base64.decode64(contents.content)
+    @github.file_contents(@full_repo_name, filename, sha)
+  end
+
+  def add_comment(filename, patch_position, message)
+    @github.add_comment(
+      comment: message,
+      commit: self,
+      filename: filename,
+      patch_position: patch_position,
+      pull_request_number: @pull_request_number,
+    )
+  end
+
+  def comments
+    @comments ||= if @pull_request_number
+      @github.pull_request_comments(full_repo_name, @pull_request_number)
+    else
+      @github.commit_comments(full_repo_name, sha)
     end
-  rescue Octokit::NotFound
-    nil
+  end
+
+  def includes?(line)
+    files.any?{ |file| file.modified_lines.include?(line) }
   end
 
   private
@@ -27,6 +45,10 @@ class Commit
   end
 
   def github_files
-    @github.commit_files(repo_name, sha)
+    if @pull_request_number
+      @github.pull_request_files(full_repo_name, @pull_request_number)
+    else
+      @github.commit_files(full_repo_name, sha)
+    end
   end
 end

@@ -11,16 +11,16 @@ class Payload
     end
   end
 
-  def head_sha
-    pull_request.fetch("head", {})["sha"]
-  end
-
   def github_repo_id
     data['repository']['id']
   end
 
   def full_repo_name
     data['repository']['full_name']
+  end
+
+  def head_sha
+    pull_request.fetch("head", {})["sha"]
   end
 
   def number
@@ -32,11 +32,25 @@ class Payload
   end
 
   def changed_files
-    pull_request["changed_files"] || 0
+    if pull_request?
+      pull_request["changed_files"] || 0
+    else
+      commits.sum do |c|
+        c['added'].count + c['modified'].count + c['removed'].count
+      end
+    end
+  end
+
+  def commits
+    data['commits'] || []
   end
 
   def ping?
     data['zen']
+  end
+
+  def pull_request?
+    data.has_key?('pull_request')
   end
 
   private

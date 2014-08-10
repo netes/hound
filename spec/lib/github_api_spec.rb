@@ -170,7 +170,7 @@ describe GithubApi do
 
   describe '#create_hook' do
     context 'when hook does not exist' do
-      it 'creates pull request web hook' do
+      it 'creates push and pull request web hook' do
         full_repo_name = 'jimtom/repo'
         callback_endpoint = 'http://example.com'
         request = stub_hook_creation_request(full_repo_name, callback_endpoint)
@@ -277,7 +277,7 @@ describe GithubApi, '#add_comment' do
     commit_sha = 'commitsha'
     file = 'test.rb'
     patch_position = 123
-    commit = double(:commit, repo_name: repo_name, sha: commit_sha)
+    commit = double(:commit, full_repo_name: repo_name, sha: commit_sha)
     request = stub_comment_request(
       repo_name,
       pull_request_number,

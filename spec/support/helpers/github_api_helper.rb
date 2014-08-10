@@ -208,7 +208,7 @@ module GithubApiHelper
       :post,
       "https://api.github.com/repos/#{full_repo_name}/hooks"
     ).with(
-      body: %({"name":"web","config":{"url":"#{callback_endpoint}"},"events":["pull_request"],"active":true}),
+      body: %({"name":"web","config":{"url":"#{callback_endpoint}"},"events":["push","pull_request"],"active":true}),
       headers: { 'Authorization' => "token #{auth_token}" }
     ).to_return(
       status: 200,
@@ -222,7 +222,7 @@ module GithubApiHelper
       :post,
       "https://api.github.com/repos/#{full_repo_name}/hooks"
     ).with(
-      body: %({"name":"web","config":{"url":"#{callback_endpoint}"},"events":["pull_request"],"active":true}),
+      body: %({"name":"web","config":{"url":"#{callback_endpoint}"},"events":["push","pull_request"],"active":true}),
       headers: { 'Authorization' => "token #{auth_token}" }
     ).to_return(
       status: 422,

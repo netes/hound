@@ -6,7 +6,10 @@ class StyleChecker
 
   def violations
     file_violations = @modified_files.map do |modified_file|
-      FileViolation.new(modified_file.filename, line_violations(modified_file))
+      FileViolation.new(
+        modified_file,
+        line_violations(modified_file),
+      )
     end
 
     file_violations.select do |file_violation|

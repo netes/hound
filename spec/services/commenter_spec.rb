@@ -17,8 +17,8 @@ describe Commenter do
             original_position: line_number,
             path: filename
           )
-          pull_request = double(
-            :pull_request,
+          commit = double(
+            :commit,
             add_comment: true,
             comments: [comment]
           )
@@ -30,20 +30,21 @@ describe Commenter do
             :line_violation,
             line: line,
             line_number: line_number,
-            messages: ['Trailing whitespace']
+            messages: ['Trailing whitespace'],
           )
           file_violation = double(
             :file_violation,
             filename: filename,
-            line_violations: [line_violation]
+            line_violations: [line_violation],
+            commit: commit,
           )
           policy = double(:commenting_policy, comment_permitted?: true)
           allow(CommentingPolicy).to receive(:new).and_return(policy)
           commenter = Commenter.new
 
-          commenter.comment_on_violations([file_violation], pull_request)
+          commenter.comment_on_violations([file_violation])
 
-          expect(pull_request).to have_received(:add_comment).with(
+          expect(commit).to have_received(:add_comment).with(
             file_violation.filename,
             line.patch_position,
             line_violation.messages.first
@@ -53,12 +54,12 @@ describe Commenter do
 
       context 'with no violations' do
         it 'does not comment' do
-          pull_request = double(:pull_request).as_null_object
+          commit = double(:commit).as_null_object
           commenter = Commenter.new
 
-          commenter.comment_on_violations([], pull_request)
+          commenter.comment_on_violations([])
 
-          expect(pull_request).not_to have_received(:add_comment)
+          expect(commit).not_to have_received(:add_comment)
         end
       end
     end
@@ -73,12 +74,10 @@ describe Commenter do
           original_position: line_number,
           path: filename
         )
-        pull_request = double(
-          :pull_request,
-          synchronize?: true,
-          opened?: false,
+        commit = double(
+          :commit,
           add_comment: true,
-          head_includes?: true,
+          includes?: true,
           comments: [comment]
         )
         line = double(
@@ -94,15 +93,16 @@ describe Commenter do
         file_violation = double(
           :file_violation,
           filename: filename,
-          line_violations: [line_violation]
+          line_violations: [line_violation],
+          commit: commit,
         )
         commenting_policy = double(:commenting_policy, comment_permitted?: true)
         allow(CommentingPolicy).to receive(:new).and_return(commenting_policy)
         commenter = Commenter.new
 
-        commenter.comment_on_violations([file_violation], pull_request)
+        commenter.comment_on_violations([file_violation])
 
-        expect(pull_request).to have_received(:add_comment).with(
+        expect(commit).to have_received(:add_comment).with(
           file_violation.filename,
           line.patch_position,
           line_violation.messages.first
@@ -120,12 +120,10 @@ describe Commenter do
           original_position: line_number,
           path: filename
         )
-        pull_request = double(
-          :pull_request,
-          synchronize?: true,
-          opened?: false,
+        commit = double(
+          :commit,
           add_comment: true,
-          head_includes?: true,
+          includes?: true,
           comments: [comment]
         )
         line = double(
@@ -141,7 +139,8 @@ describe Commenter do
         file_violation = double(
           :file_violation,
           filename: filename,
-          line_violations: [line_violation]
+          line_violations: [line_violation],
+          commit: commit,
         )
         commenting_policy = double(
           :commenting_policy,
@@ -150,9 +149,9 @@ describe Commenter do
         allow(CommentingPolicy).to receive(:new).and_return(commenting_policy)
         commenter = Commenter.new
 
-        commenter.comment_on_violations([file_violation], pull_request)
+        commenter.comment_on_violations([file_violation])
 
-        expect(pull_request).not_to have_received(:add_comment)
+        expect(commit).not_to have_received(:add_comment)
       end
     end
   end

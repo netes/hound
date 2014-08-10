@@ -1,6 +1,6 @@
 class CommentingPolicy
-  def comment_permitted?(pull_request, previous_comments_on_line, violation)
-    in_review?(pull_request, violation.line) &&
+  def comment_permitted?(commit, previous_comments_on_line, violation)
+    in_review?(commit, violation.line) &&
       violation_not_previously_reported?(
         violation.messages,
         existing_messages(previous_comments_on_line)
@@ -9,8 +9,8 @@ class CommentingPolicy
 
   private
 
-  def in_review?(pull_request, line)
-    pull_request.opened? || pull_request.head_includes?(line)
+  def in_review?(commit, line)
+    commit.includes?(line)
   end
 
   def violation_not_previously_reported?(new_messages, existing_messages)

@@ -29,14 +29,11 @@ class GithubApi
   end
 
   def add_comment(options)
-    client.create_pull_request_comment(
-      options[:commit].repo_name,
-      options[:pull_request_number],
-      options[:comment],
-      options[:commit].sha,
-      options[:filename],
-      options[:patch_position]
-    )
+    if options[:pull_request_number]
+      add_pull_request_comment(options)
+    else
+      add_commit_comment(options)
+    end
   end
 
   def create_hook(full_repo_name, callback_endpoint)
@@ -44,7 +41,7 @@ class GithubApi
       full_repo_name,
       'web',
       { url: callback_endpoint },
-      { events: ['pull_request'], active: true }
+      { events: ['push', 'pull_request'], active: true }
     )
 
     yield hook if block_given?
@@ -63,6 +60,10 @@ class GithubApi
     commit.files
   end
 
+  def commit_comments(full_repo_name, commit_sha)
+    client.commit_comments(full_repo_name, commit_sha)
+  end
+
   def pull_request_comments(full_repo_name, pull_request_number)
     client.pull_request_comments(full_repo_name, pull_request_number)
   end
@@ -72,7 +73,12 @@ class GithubApi
   end
 
   def file_contents(full_repo_name, filename, sha)
-    client.contents(full_repo_name, path: filename, ref: sha)
+    contents = client.contents(full_repo_name, path: filename, ref: sha)
+    if contents && contents.content
+      Base64.decode64(contents.content)
+    end
+  rescue Octokit::NotFound
+    nil
   end
 
   def user_teams
@@ -85,6 +91,28 @@ class GithubApi
   end
 
   private
+
+  def add_commit_comment(options)
+    client.create_commit_comment(
+      options[:commit].full_repo_name,
+      options[:commit].sha,
+      options[:comment],
+      options[:filename],
+      nil,
+      options[:patch_position],
+    )
+  end
+
+  def add_pull_request_comment(options)
+    client.create_pull_request_comment(
+      options[:commit].full_repo_name,
+      options[:pull_request_number],
+      options[:comment],
+      options[:commit].sha,
+      options[:filename],
+      options[:patch_position]
+    )
+  end
 
   def add_user_to_org(username, repo)
     repo_teams = client.repository_teams(repo.full_name)

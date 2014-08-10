@@ -1,4 +1,6 @@
 class CommitFile
+  attr_reader :commit
+
   def initialize(file, commit)
     @file = file
     @commit = commit
