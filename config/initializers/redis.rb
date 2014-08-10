@@ -1,2 +1,1 @@
-REDIS = Redis.new(url: ENV['REDISTOGO_URL'])
-Resque.redis = REDIS
+Resque.redis = 'localhost:6379'
