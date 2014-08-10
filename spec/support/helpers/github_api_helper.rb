@@ -130,7 +130,7 @@ module GithubApiHelper
   def stub_org_teams_request(org_name, token)
     stub_request(
       :get,
-      "https://api.github.com/orgs/#{org_name}/teams"
+      "https://api.github.com/orgs/#{org_name}/teams?per_page=100"
     ).with(
       headers: { 'Authorization' => "token #{token}" }
     ).to_return(
@@ -157,7 +157,7 @@ module GithubApiHelper
     )
     stub_request(
       :get,
-      "https://api.github.com/orgs/#{org_name}/teams"
+      "https://api.github.com/orgs/#{org_name}/teams?per_page=100"
     ).with(
       headers: { 'Authorization' => "token #{token}" }
     ).to_return(

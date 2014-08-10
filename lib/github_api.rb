@@ -151,7 +151,7 @@ class GithubApi
 
   def find_team(name, repo)
     teams = client.org_teams(repo.organization.login, per_page: 100)
-    until team = teams.find{ |t| t.name == name } || teams.count < 100 do
+    until (team = teams.find{ |t| t.name == name }) || teams.count < 100 do
       teams = client.last_response.rels[:next].get.data
     end
     team
