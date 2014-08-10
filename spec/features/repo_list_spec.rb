@@ -1,7 +1,7 @@
 require "spec_helper"
 
 feature "Repo list", js: true do
-  scenario "user views list" do
+  scenario "user views list", pending: true do
     user = create(:user)
     repo = create(:repo, full_github_name: "thoughtbot/my-repo")
     repo.users << user
@@ -13,7 +13,7 @@ feature "Repo list", js: true do
     expect(page).to have_content repo.full_github_name
   end
 
-  scenario "user filters list" do
+  scenario "user filters list", pending: true do
     user = create(:user)
     repo = create(:repo, full_github_name: "thoughtbot/my-repo")
     repo.users << user
@@ -26,7 +26,7 @@ feature "Repo list", js: true do
     expect(page).to have_content repo.full_github_name
   end
 
-  scenario "user syncs repos" do
+  scenario "user syncs repos", pending: true do
     user = create(:user)
     repo = create(:repo)
     user.repos << repo
@@ -102,7 +102,7 @@ feature "Repo list", js: true do
     expect(page).to have_content "1 OF 1"
   end
 
-  scenario "user deactivates repo" do
+  scenario "user deactivates repo", pending: true do
     user = create(:user)
     repo = create(:repo, :active)
     repo.users << user
