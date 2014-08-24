@@ -1,7 +1,7 @@
 class StyleChecker
   def initialize(modified_files, custom_config = nil)
     @modified_files = modified_files
-    @custom_ruby_config = custom_config
+    @custom_config = custom_config
     @style_guides = {}
   end
 
@@ -19,8 +19,6 @@ class StyleChecker
   end
 
   private
-
-  attr_reader :custom_ruby_config
 
   def line_violations(modified_file)
     violations = style_guide_for(modified_file.language).
@@ -45,8 +43,7 @@ class StyleChecker
     unless @style_guides[language]
       if language_enabled?(language)
         style_guide_class = "#{language}StyleGuide".constantize
-        custom_config = custom_config_for(language)
-        @style_guides[language] = style_guide_class.new(custom_config)
+        @style_guides[language] = style_guide_class.new(@custom_config)
       else
         @style_guides[language] = UnknownStyleGuide.new(:no_config)
       end
@@ -56,11 +53,7 @@ class StyleChecker
 
   def language_enabled?(language)
     config = YAML.load_file("config/rubocop.yml")
-    custom_config = custom_ruby_config ? YAML.load(custom_ruby_config) : {}
-    config.merge(custom_config)[language]["Enabled"]
-  end
-
-  def custom_config_for(language)
-    try(:"custom_#{language.downcase}_config")
+    custom_config = @custom_config ? YAML.load(@custom_config) : {}
+    config.merge(custom_config).fetch(language){ {} }["Enabled"]
   end
 end
