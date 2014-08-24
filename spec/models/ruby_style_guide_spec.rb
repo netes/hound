@@ -72,8 +72,8 @@ end
     end
 
     describe 'when using find' do
-      it 'returns violations' do
-        expect(violations_in(<<-CODE)).not_to be_empty
+      it 'returns no violations' do
+        expect(violations_in(<<-CODE)).to be_empty
 users.find do |user|
   user.active?
 end
@@ -92,8 +92,8 @@ end
     end
 
     describe 'when using find_all' do
-      it 'returns violations' do
-        expect(violations_in(<<-CODE)).not_to be_empty
+      it 'returns no violations' do
+        expect(violations_in(<<-CODE)).to be_empty
 users.find_all do |user|
   user.active?
 end
@@ -112,8 +112,8 @@ end
     end
 
     describe 'when using collect' do
-      it 'returns violations' do
-        expect(violations_in(<<-CODE)).not_to be_empty
+      it 'returns no violations' do
+        expect(violations_in(<<-CODE)).to be_empty
 users.collect do |user|
   user.name
 end
