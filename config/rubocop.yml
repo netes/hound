@@ -19,6 +19,9 @@ Rails/ActionFilter:
 Rails/Delegate:
   Enabled: true
 
+Rails/HasAndBelongsToMany:
+  Enabled: false
+
 # Style
 
 Style/AccessorMethodName:
@@ -101,6 +104,7 @@ Style/FlipFlop:
 
 Style/FormatString:
   Enabled: true
+  EnforcedStyle: percent
 
 Style/GlobalVars:
   Enabled: true
@@ -128,6 +132,9 @@ Style/LineLength:
 
 Style/MethodLength:
   Enabled: true
+
+Style/MethodDefParentheses:
+  EnforcedStyle: require_no_parentheses
 
 Style/ModuleFunction:
   Enabled: true
@@ -183,13 +190,16 @@ Style/SelfAssignment:
   Enabled: true
 
 Style/SingleLineBlockParams:
-  Enabled: true
+  Enabled: false
 
 Style/SingleLineMethods:
   Enabled: false
 
 Style/SignalException:
   Enabled: true
+
+Style/SpaceBeforeBlockBraces:
+  EnforcedStyle: no_space
 
 Style/SpecialGlobalVars:
   Enabled: true
@@ -243,7 +253,7 @@ Lint/HandleExceptions:
   Enabled: true
 
 Lint/InvalidCharacterLiteral:
-  Enabled: true
+  Enabled: false
 
 Lint/LiteralInCondition:
   Enabled: true
