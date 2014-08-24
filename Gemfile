@@ -40,7 +40,10 @@ group :development do
 end
 
 group :development, :test do
-  gem 'byebug'
+  gem 'pry'
+  gem 'pry-rescue'
+  gem 'pry-stack_explorer'
+  gem 'pry-nav'
   gem 'poltergeist'
   gem 'rspec-rails', '>= 2.14'
 end

@@ -32,13 +32,12 @@ GEM
     arel (4.0.2)
     ast (2.0.0)
     atomic (1.1.16)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
     bourbon (3.1.8)
       sass (>= 3.2.0)
       thor
     builder (3.1.4)
-    byebug (3.1.2)
-      columnize (~> 0.8)
-      debugger-linecache (~> 1.2)
     capistrano (3.2.1)
       i18n
       rake (>= 10.0.0)
@@ -65,6 +64,7 @@ GEM
     childprocess (0.5.3)
       ffi (~> 1.0, >= 1.0.11)
     cliver (0.3.2)
+    coderay (1.1.0)
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.0)
@@ -77,13 +77,11 @@ GEM
       execjs
       json
     colorize (0.7.2)
-    colorize (0.7.3)
-    columnize (0.8.9)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     dalli (2.7.0)
     database_cleaner (1.2.0)
-    debugger-linecache (1.2.0)
+    debug_inspector (0.0.2)
     diff-lcs (1.2.4)
     dotenv (0.11.1)
       dotenv-deployment (~> 0.0.2)
@@ -117,6 +115,7 @@ GEM
     hike (1.2.3)
     httpauth (0.2.0)
     i18n (0.6.11)
+    interception (0.5)
     jquery-rails (3.0.4)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
@@ -129,6 +128,7 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.5.3)
     minitest (4.7.5)
@@ -173,6 +173,18 @@ GEM
       websocket-driver (>= 0.2.0)
     polyglot (0.3.4)
     powerpack (0.0.9)
+    pry (0.10.1)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    pry-nav (0.2.4)
+      pry (>= 0.9.10, < 0.11.0)
+    pry-rescue (1.4.1)
+      interception (>= 0.5)
+      pry
+    pry-stack_explorer (0.4.9.1)
+      binding_of_caller (>= 0.7)
+      pry (>= 0.9.11)
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
@@ -299,7 +311,6 @@ DEPENDENCIES
   active_model_serializers
   angularjs-rails
   bourbon
-  byebug
   capistrano
   capistrano-rails
   capistrano-resque
@@ -326,6 +337,10 @@ DEPENDENCIES
   paranoia (~> 2.0)
   pg
   poltergeist
+  pry
+  pry-nav
+  pry-rescue
+  pry-stack_explorer
   rails (= 4.0.4)
   resque (~> 1.22.0)
   resque-retry
