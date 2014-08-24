@@ -86,7 +86,7 @@ class strange_ClassNAME
   context 'with custom configuration' do
     it 'finds no violations' do
       content = '1' * 110
-      file = double(:file, contents: content, filename: 'test.coffee')
+      file = double(:file, content: content, filename: 'test.coffee')
       config = <<-TEXT.strip_heredoc
         {
           "max_line_length": {
@@ -111,7 +111,7 @@ class strange_ClassNAME
       content += "\n"
     end
 
-    file = double(:file, contents: content, filename: 'test.coffee')
+    file = double(:file, content: content, filename: 'test.coffee')
     CoffeeScriptStyleGuide.new.violations(file).map(&:message)
   end
 end

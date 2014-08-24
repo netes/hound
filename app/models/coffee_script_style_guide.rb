@@ -4,7 +4,7 @@ class CoffeeScriptStyleGuide
   end
 
   def violations(file)
-    Coffeelint.lint(file.contents, configuration).map do |violation_hash|
+    Coffeelint.lint(file.content, configuration).map do |violation_hash|
       CoffeeLintViolation.new(
         violation_hash.fetch('lineNumber'),
         violation_hash.fetch('message')

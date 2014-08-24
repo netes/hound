@@ -73,7 +73,7 @@ describe StyleChecker, "#violations" do
     double(
       :modified_file,
       filename: filename,
-      contents: formatted_contents,
+      content: formatted_contents,
       ruby?: language == "Ruby",
       coffeescript?: language == "CoffeeScript",
       language: language,
