@@ -1,6 +1,13 @@
 class RubyStyleGuide
-  def initialize(override_config_content = nil)
-    @override_config_content = override_config_content
+  RUBOCOP_CONFIG_FILE = "config/rubocop.yml"
+
+  def initialize(config_content = nil)
+    if config_content
+      @config = RuboCop::Config.new(
+        RuboCop::ConfigLoader.merge(config, YAML.load(config_content)),
+        RUBOCOP_CONFIG_FILE
+      )
+    end
   end
 
   def violations(file)
@@ -25,35 +32,18 @@ class RubyStyleGuide
   end
 
   def parse_source(file)
-    RuboCop::ProcessedSource.new(file.content)
+    RuboCop::ProcessedSource.new(file.content, file.filename)
   end
 
   def config
-    if @config.nil?
-      config_file = "config/rubocop.yml"
-      config = RuboCop::ConfigLoader.configuration_from_file(config_file)
-      combined_config = RuboCop::ConfigLoader.merge(config, override_config)
-      @config = RuboCop::Config.new(combined_config, "")
+    @config ||= begin
+      RuboCop::ConfigLoader.configuration_from_file(RUBOCOP_CONFIG_FILE)
     end
-
-    @config
   end
 
   def rubocop_options
     if config["ShowCopNames"]
       { debug: true }
-    end
-  end
-
-  def override_config
-    if @override_config_content
-      config_content = YAML.load(@override_config_content)
-      override_config = RuboCop::Config.new(config_content, "")
-      override_config.add_missing_namespaces
-      override_config.make_excludes_absolute
-      override_config
-    else
-      {}
     end
   end
 end
