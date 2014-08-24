@@ -373,7 +373,7 @@ end
   context 'with custom configuration' do
     it 'finds only one violation' do
       config = <<-TEXT.strip_heredoc
-        StringLiterals:
+        Style/StringLiterals:
           EnforcedStyle: double_quotes
           Enabled: true
       TEXT
@@ -401,10 +401,11 @@ end
     context 'with old-style syntax' do
       it 'has one violation' do
         config = <<-TEXT.strip_heredoc
-          StringLiterals:
+          Style/StringLiterals:
+            Enabled: true
             EnforcedStyle: single_quotes
 
-          DefWithParentheses:
+          Style/DefWithParentheses:
             Enabled: false
         TEXT
 
