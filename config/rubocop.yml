@@ -79,7 +79,7 @@ Style/Documentation:
   Enabled: false
 
 Style/DotPosition:
-  EnforcedStyle: trailing
+  EnforcedStyle: leading
 
 Style/DoubleNegation:
   Enabled: true
