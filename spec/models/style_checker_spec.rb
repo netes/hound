@@ -37,7 +37,7 @@ describe StyleChecker, "#violations" do
 
   it "returns a collection of files with style violations" do
     modified_file1 = stub_modified_file("good.coffee", "a = 7", "CoffeeScript")
-    modified_file = stub_modified_file("bad.coffee", "1" * 81, "CoffeeScript")
+    modified_file = stub_modified_file("bad.coffee", "1" * 101, "CoffeeScript")
 
     expected_line_violation = LineViolation.new(
       modified_file.modified_line_at,

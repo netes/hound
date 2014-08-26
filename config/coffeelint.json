@@ -6,7 +6,7 @@
         "level": "error"
     },
     "coffeescript_error": {
-        "level": "ignore"
+        "level": "error"
     },
     "colon_assignment_spacing": {
         "level": "ignore",
@@ -17,42 +17,42 @@
     },
     "cyclomatic_complexity": {
         "value": 10,
-        "level": "ignore"
+        "level": "error"
     },
     "duplicate_key": {
-        "level": "ignore"
+        "level": "error"
     },
     "empty_constructor_needs_parens": {
-        "level": "ignore"
+        "level": "error"
     },
     "indentation": {
         "value": 2,
         "level": "error"
     },
     "line_endings": {
-        "level": "ignore",
+        "level": "error",
         "value": "unix"
     },
     "max_line_length": {
-        "value": 80,
+        "value": 100,
         "level": "error",
         "limitComments": true
     },
     "missing_fat_arrows": {
-        "level": "ignore"
+        "level": "error"
     },
     "newlines_after_classes": {
         "value": 3,
-        "level": "ignore"
+        "level": "error"
     },
     "no_backticks": {
-        "level": "ignore"
+        "level": "error"
     },
     "no_debugger": {
-        "level": "ignore"
+        "level": "error"
     },
     "no_empty_functions": {
-        "level": "ignore"
+        "level": "error"
     },
     "no_empty_param_list": {
         "level": "ignore"
@@ -72,16 +72,16 @@
         "level": "ignore"
     },
     "no_stand_alone_at": {
-        "level": "ignore"
+        "level": "error"
     },
     "no_tabs": {
         "level": "error"
     },
     "no_throwing_strings": {
-        "level": "ignore"
+        "level": "error"
     },
     "no_trailing_semicolons": {
-        "level": "ignore"
+        "level": "error"
     },
     "no_trailing_whitespace": {
         "level": "error",
@@ -92,12 +92,12 @@
         "level": "ignore"
     },
     "no_unnecessary_fat_arrows": {
-        "level": "ignore"
+        "level": "error"
     },
     "non_empty_constructor_needs_parens": {
-        "level": "ignore"
+        "level": "error"
     },
     "space_operators": {
-        "level": "ignore"
+        "level": "error"
     }
 }

@@ -7,7 +7,7 @@ describe CoffeeScriptStyleGuide, '#violations' do
   context 'with default configuration' do
     context 'for long line' do
       it 'returns violation' do
-        expect(violations_in('1' * 81).first).to match(/exceeds maximum/)
+        expect(violations_in('1' * 101).first).to match(/exceeds maximum/)
       end
     end
 
