@@ -128,16 +128,16 @@ Style/LineEndConcatenation:
   Enabled: true
 
 Style/LineLength:
-  Max: 80
+  Max: 100
 
 Style/MethodLength:
   Enabled: true
 
 Style/MethodDefParentheses:
-  EnforcedStyle: require_no_parentheses
+  Enabled: false
 
 Style/DefWithParentheses:
-  Enabled: false
+  Enabled: true
 
 Style/ModuleFunction:
   Enabled: true

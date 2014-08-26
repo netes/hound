@@ -151,7 +151,7 @@ puts 'test' # inline comment
 
     context 'for long line' do
       it 'returns violation' do
-        expect(violations_in('a' * 81)).not_to be_empty
+        expect(violations_in('a' * 101)).not_to be_empty
       end
     end
 
@@ -381,7 +381,7 @@ end
       violations = violations_with_config(config)
 
       expect(violations).to eq [
-        "Use def without parentheses."
+        "Omit the parentheses in defs when the method doesn't accept any arguments."
       ]
     end
 
@@ -393,7 +393,7 @@ end
       violations = violations_with_config(config)
 
       expect(violations).to eq [
-        "Style/MethodDefParentheses: Use def without parentheses."
+        "Style/DefWithParentheses: Omit the parentheses in defs when the method doesn't accept any arguments."
       ]
     end
 
@@ -410,10 +410,10 @@ end
 
         violations = violations_with_config(config)
 
-        expect(violations).to eq [
+        expect(violations).to include(
           "Prefer single-quoted strings when you don't need string "\
           "interpolation or special symbols."
-        ]
+        )
       end
     end
 

@@ -18,9 +18,10 @@ describe StyleChecker, "#violations" do
     )
     expected_line_violation = LineViolation.new(
       modified_file2.modified_line_at,
-      ["Use def without parentheses.", 
+      [
         "Space inside parentheses detected.", 
-        "Trailing whitespace detected."]
+        "Trailing whitespace detected.",
+      ]
     )
     config = "Style/EndOfLine:\n  Enabled: false"
 
