@@ -136,6 +136,9 @@ Style/MethodLength:
 Style/MethodDefParentheses:
   EnforcedStyle: require_no_parentheses
 
+Style/DefWithParentheses:
+  Enabled: false
+
 Style/ModuleFunction:
   Enabled: true
 

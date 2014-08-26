@@ -251,7 +251,7 @@ private
 
     context 'for leading dot used for multi-line method chain' do
       it 'returns violations' do
-        expect(violations_in(<<-CODE)).not_to be_empty
+        expect(violations_in(<<-CODE)).to be_empty
 one
   .two
   .three
@@ -381,7 +381,7 @@ end
       violations = violations_with_config(config)
 
       expect(violations).to eq [
-        "Omit the parentheses in defs when the method doesn't accept any arguments."
+        "Use def without parentheses."
       ]
     end
 
@@ -393,8 +393,7 @@ end
       violations = violations_with_config(config)
 
       expect(violations).to eq [
-        "Style/DefWithParentheses: Omit the parentheses in defs "\
-        "when the method doesn't accept any arguments."
+        "Style/MethodDefParentheses: Use def without parentheses."
       ]
     end
 
@@ -405,7 +404,7 @@ end
             Enabled: true
             EnforcedStyle: single_quotes
 
-          Style/DefWithParentheses:
+          Style/MethodDefParentheses:
             Enabled: false
         TEXT
 
@@ -438,7 +437,10 @@ end
           "hello world"
         end
       TEXT
-      config << "\nStyle/EndOfLine:\n  Enabled: false"
+      config << <<-YAML.strip_heredoc
+        Style/EndOfLine:
+          Enabled: false
+      YAML
 
       style_guide = RubyStyleGuide.new(config)
       violations = style_guide.violations(build_file(content))
@@ -452,6 +454,8 @@ end
     config = <<-YAML.strip_heredoc
       Style/EndOfLine:
         Enabled: false
+      Style/MethodDefParentheses:
+        EnforcedStyle: require_parentheses
     YAML
     unless content.end_with?("\n")
       content += "\n"
