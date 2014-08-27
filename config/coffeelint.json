@@ -95,7 +95,7 @@
         "level": "error"
     },
     "non_empty_constructor_needs_parens": {
-        "level": "error"
+        "level": "ignore"
     },
     "space_operators": {
         "level": "error"
