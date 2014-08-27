@@ -23,7 +23,7 @@
         "level": "error"
     },
     "empty_constructor_needs_parens": {
-        "level": "error"
+        "level": "ignore"
     },
     "indentation": {
         "value": 2,
