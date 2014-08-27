@@ -4,6 +4,7 @@ AllCops:
   Exclude:
     - db/schema.rb
     - db/migrate/*
+    - vendor/*
   RunRailsCops: true
 
 CoffeeScript:
