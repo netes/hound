@@ -24,6 +24,12 @@ Rails/Delegate:
 Rails/HasAndBelongsToMany:
   Enabled: false
 
+# RSpec
+
+RSpec/DescribeClass:
+  Exclude:
+    - spec/features/*
+
 # Style
 
 Style/AccessorMethodName:
