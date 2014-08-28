@@ -225,8 +225,7 @@ Style/VariableInterpolation:
   Enabled: true
 
 Style/TrailingComma:
-  EnforcedStyleForMultiline: comma
-  Enabled: true
+  Enabled: false
 
 Style/TrivialAccessors:
   Enabled: true
