@@ -38,6 +38,9 @@ Style/AccessorMethodName:
 Style/Alias:
   Enabled: true
 
+Style/AlignHash:
+  Enabled: false
+
 Style/ArrayJoin:
   Enabled: true
 
