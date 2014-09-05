@@ -41,6 +41,10 @@ Style/Alias:
 Style/AlignHash:
   Enabled: false
 
+Style/AlignParameters:
+  Enabled: true
+  EnforcedStyle: with_fixed_indentation
+
 Style/ArrayJoin:
   Enabled: true
 
