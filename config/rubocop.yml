@@ -7,6 +7,10 @@ AllCops:
     - vendor/*
   RunRailsCops: true
 
+LineLength:
+  Exclude:
+    - db/seeds.rb
+
 CoffeeScript:
   Enabled: true
 
