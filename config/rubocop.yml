@@ -7,10 +7,6 @@ AllCops:
     - vendor/*
   RunRailsCops: true
 
-LineLength:
-  Exclude:
-    - db/seeds.rb
-
 CoffeeScript:
   Enabled: true
 
@@ -149,6 +145,8 @@ Style/LineEndConcatenation:
 
 Style/LineLength:
   Max: 100
+  Exclude:
+  - db/seeds.rb
 
 Style/MethodLength:
   Enabled: true
