@@ -33,6 +33,7 @@ Rails/HasAndBelongsToMany:
 RSpec/DescribeClass:
   Exclude:
     - spec/features/*
+    - spec/lib/tasks/*
 
 # Style
 
