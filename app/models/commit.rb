@@ -1,6 +1,7 @@
 class Commit
-  pattr_initialize :repo_name, :sha, :github, [:pull_request_number]
-  attr_reader :repo_name, :sha
+  pattr_initialize :repo_name, :sha, :github,
+    [:pull_request_number, :repository_owner]
+  attr_reader :repo_name, :sha, :repository_owner
 
   def file_content(filename)
     contents = @github.file_contents(repo_name, filename, sha)
@@ -11,9 +12,15 @@ class Commit
     end
   rescue Octokit::NotFound
     ""
+  rescue Octokit::Forbidden => exception
+    if exception.errors.first[:code] == "too_large"
+      ""
+    else
+      raise exception
+    end
   end
 
-  def add_comment(violation)
+  def comment_on_violation(violation)
     github.add_comment(
       pull_request_number: pull_request_number,
       comment: violation.messages.join("<br>"),

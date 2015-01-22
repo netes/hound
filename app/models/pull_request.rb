@@ -19,6 +19,7 @@ class PullRequest < Event
 
   def head_commit
     Commit.new(full_repo_name, payload.head_sha, api,
-      pull_request_number: payload.pull_request_number)
+      pull_request_number: payload.pull_request_number,
+      repository_owner: payload.repository_owner)
   end
 end

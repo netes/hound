@@ -12,11 +12,11 @@ class Payload
   end
 
   def github_repo_id
-    data['repository']['id']
+    repository["id"]
   end
 
   def full_repo_name
-    data['repository']['full_name']
+    repository["full_name"]
   end
 
   def pull_request_number
@@ -48,6 +48,10 @@ class Payload
   def pull_request?
     data.key?("pull_request")
   end
+  
+  def repository_owner
+    repository["owner"]["login"]
+  end
 
   private
 
@@ -61,5 +65,9 @@ class Payload
 
   def pull_request
     data.fetch("pull_request", {})
+  end
+
+  def repository
+    @repository ||= data["repository"]
   end
 end

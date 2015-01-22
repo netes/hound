@@ -1,13 +1,8 @@
-require "attr_extras"
-require "rubocop"
-require "sentry-raven"
-
-require "fast_spec_helper"
-require "app/models/style_guide/base"
-require "app/models/style_guide/ruby"
-require "app/models/violation"
+require "spec_helper"
 
 describe StyleGuide::Ruby, "#violations_in_file" do
+  include ConfigurationHelper
+
   context "with default configuration" do
     describe "for { and } as %r literal delimiters" do
       it "returns no violations" do
@@ -304,6 +299,37 @@ end
       end
     end
 
+    context "for argument list spanning multiple lines" do
+      context "when each argument is not on its own line" do
+        it "returns violations" do
+          code = <<-CODE.strip_heredoc
+            validates :name,
+              presence: true,
+              uniqueness: true
+          CODE
+
+          expect(violations_in(code)).to eq [
+            "Align the parameters of a method call if they span more than " +
+              "one line."
+          ]
+        end
+      end
+
+      context "when each argument is on its own line" do
+        it "returns no violations" do
+          code = <<-CODE.strip_heredoc
+            validates(
+              :name,
+              presence: true,
+              uniqueness: true
+            )
+          CODE
+
+          expect(violations_in(code)).to be_empty
+        end
+      end
+    end
+
     context "for required keyword arguments" do
       context "without space after arguments" do
         it "returns no violations" do
@@ -394,6 +420,24 @@ end
 
         expect(violations).to be_empty
       end
+
+      it 'allows a cop to be excluded for specific files or directories' do
+        config = {
+          "StringLiterals" => {
+            "EnforcedStyle" => "single_quotes"
+          },
+          "HashSyntax" => {
+            "Exclude" => ["lib/**/*"]
+          }
+        }
+
+        violations = violations_with_config(config)
+
+        expect(violations).to eq [
+          "Prefer single-quoted strings when you don't need string "\
+          "interpolation or special symbols."
+        ]
+      end
     end
 
     def violations_with_config(config)
@@ -403,20 +447,105 @@ end
         end
       TEXT
 
-      violations_in(content, config)
+      violations_in(content, config: config)
+    end
+  end
+
+  context "default configuration" do
+    it "uses a default configuration for rubocop" do
+      spy_on_rubocop_team
+      spy_on_rubocop_configuration_loader
+      config_file = default_configuration_file(StyleGuide::Ruby)
+      code = <<-CODE
+        private def foo
+          bar
+        end
+      CODE
+
+      violations_in(code, repository_owner: "not_thoughtbot")
+
+      expect(RuboCop::ConfigLoader).to have_received(:configuration_from_file).
+        with(config_file)
+
+      expect(RuboCop::Cop::Team).to have_received(:new).
+        with(anything, default_configuration, anything)
+    end
+  end
+
+  context "thoughtbot organization PR" do
+    it "uses the thoughtbot configuration for rubocop" do
+      spy_on_rubocop_team
+      spy_on_rubocop_configuration_loader
+      config_file = thoughtbot_configuration_file(StyleGuide::Ruby)
+      code = <<-CODE
+        private def foo
+          bar
+        end
+      CODE
+
+      thoughtbot_violations_in(code)
+
+      expect(RuboCop::ConfigLoader).to have_received(:configuration_from_file).
+        with(config_file)
+
+      expect(RuboCop::Cop::Team).to have_received(:new).
+        with(anything, thoughtbot_configuration, anything)
+    end
+
+    describe "when using reduce" do
+      it "returns no violations" do
+        expect(thoughtbot_violations_in(<<-CODE)).to eq []
+          users.reduce(0) do |sum, user|
+            sum + user.age
+          end
+        CODE
+      end
+    end
+
+    describe "when using inject" do
+      it "returns violations" do
+        expect(thoughtbot_violations_in(<<-CODE)).not_to be_empty
+          users.inject(0) do |result, user|
+            user.age
+          end
+        CODE
+      end
+    end
+
+    def thoughtbot_violations_in(content)
+      violations_in(content, repository_owner: "thoughtbot")
     end
   end
 
   private
 
-  def violations_in(content, config = nil)
+  def violations_in(content, config: nil, repository_owner: "ralph")
     repo_config = double("RepoConfig", enabled_for?: true, for: config)
-    style_guide = StyleGuide::Ruby.new(repo_config)
+    style_guide = StyleGuide::Ruby.new(repo_config, repository_owner)
     style_guide.violations_in_file(build_file(content)).flat_map(&:messages)
   end
 
   def build_file(content)
     line = double("Line", content: "blah", number: 1, patch_position: 2)
     double("CommitFile", content: content, filename: "lib/a.rb", line_at: line)
+  end
+
+  def default_configuration
+    config_file = default_configuration_file(StyleGuide::Ruby)
+    RuboCop::ConfigLoader.configuration_from_file(config_file)
+  end
+
+  def thoughtbot_configuration
+    config_file = thoughtbot_configuration_file(StyleGuide::Ruby)
+    RuboCop::ConfigLoader.configuration_from_file(config_file)
+  end
+
+  def spy_on_rubocop_team
+    allow(RuboCop::Cop::Team).to receive(:new).and_call_original
+  end
+
+  def spy_on_rubocop_configuration_loader
+    allow(RuboCop::ConfigLoader).to receive(:configuration_from_file).
+      and_call_original
   end
 end

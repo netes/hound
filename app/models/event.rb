@@ -15,6 +15,10 @@ class Event
     @config ||= RepoConfig.new(head_commit)
   end
 
+  def repository_owner
+    payload.repository_owner
+  end
+
   private
 
   def api

@@ -4,27 +4,18 @@ require "active_support/core_ext/object/with_options"
 
 class GithubApi
   SERVICES_TEAM_NAME = "Services"
-  PREVIEW_MEDIA_TYPE =
-    ::Octokit::Client::Organizations::ORG_INVITATIONS_PREVIEW_MEDIA_TYPE
+  PREVIEW_MEDIA_TYPE = "application/vnd.github.moondragon-preview+json"
 
-  pattr_initialize :token
+  def initialize(token = ENV["HOUND_GITHUB_TOKEN"])
+    @token = token
+  end
 
   def client
-    @client ||= Octokit::Client.new(access_token: token, auto_paginate: true)
+    @client ||= Octokit::Client.new(access_token: @token, auto_paginate: true)
   end
 
   def repos
     user_repos + org_repos
-  end
-
-  def add_user_to_repo(username, repo_name)
-    repo = repo(repo_name)
-
-    if repo.organization
-      add_user_to_org(username, repo)
-    else
-      client.add_collaborator(repo.full_name, username)
-    end
   end
 
   def repo(repo_name)
@@ -71,13 +62,10 @@ class GithubApi
   end
 
   def pull_request_comments(full_repo_name, pull_request_number)
-    paginate do |page|
-      client.pull_request_comments(
-        full_repo_name,
-        pull_request_number,
-        page: page
-      )
-    end
+    repo_path = Octokit::Repository.path full_repo_name
+
+    # client.pull_request_comments does not do auto-pagination.
+    client.paginate "#{repo_path}/pulls/#{pull_request_number}/comments"
   end
 
   def commit_comments(full_repo_name, commit_sha)
@@ -96,24 +84,24 @@ class GithubApi
     client.contents(full_repo_name, path: filename, ref: sha)
   end
 
-  def user_teams
-    client.user_teams
-  end
-
   def accept_pending_invitations
-    with_preview_client do |preview_client|
-      pending_memberships =
-        preview_client.organization_memberships(state: "pending")
-      pending_memberships.each do |pending_membership|
-        preview_client.update_organization_membership(
-          pending_membership["organization"]["login"],
-          state: "active"
-        )
-      end
+    pending_memberships = client.organization_memberships(state: "pending")
+    pending_memberships.each do |pending_membership|
+      client.update_organization_membership(
+        pending_membership["organization"]["login"],
+        state: "active"
+      )
     end
   end
 
-  private
+  def create_pending_status(full_repo_name, sha, description)
+    create_status(
+      repo: full_repo_name,
+      sha: sha,
+      state: "pending",
+      description: description
+    )
+  end
 
   def add_commit_comment(options)
     client.create_commit_comment(
@@ -140,93 +128,66 @@ class GithubApi
   def add_user_to_org(username, repo)
     repo_teams = client.repository_teams(repo.full_name)
     admin_team = admin_access_team(repo_teams)
-
-    if admin_team
-      add_user_to_team(username, admin_team.id)
-    else
-      add_user_and_repo_to_services_team(username, repo)
-    end
   end
 
-  def admin_access_team(repo_teams)
-    token_bearer = GithubUser.new(self)
-
-    repo_teams.detect do |repo_team|
-      token_bearer.has_admin_access_through_team?(repo_team.id)
-    end
+  def create_success_status(full_repo_name, sha, description)
+    create_status(
+      repo: full_repo_name,
+      sha: sha,
+      state: "success",
+      description: description
+    )
   end
 
-  def add_user_and_repo_to_services_team(username, repo)
-    team = find_team(SERVICES_TEAM_NAME, repo)
+  def add_collaborator(repo_name, username)
+    client.add_collaborator(repo_name, username)
+  end
 
-    if team
-      client.add_team_repository(team.id, repo.full_name)
-    else
-      team = create_team(SERVICES_TEAM_NAME, repo)
-    end
+  def user_teams
+    client.user_teams
+  end
 
-    add_user_to_team(username, team.id)
+  def repo_teams(repo_name)
+    client.repository_teams(repo_name)
+  end
+
+  def org_teams(org_name)
+    client.org_teams(org_name)
+  end
+
+  def create_team(team_name:, org_name:, repo_name:)
+    team_options = {
+      name: team_name,
+      repo_names: [repo_name],
+      permission: "push"
+    }
+    client.create_team(org_name, team_options)
+  end
+
+  def add_repo_to_team(team_id, repo_name)
+    client.add_team_repository(team_id, repo_name)
   end
 
   def add_user_to_team(username, team_id)
-    with_preview_client do |preview_client|
-      preview_client.add_team_membership(team_id, username)
-    end
-  rescue Octokit::NotFound
-    false
+    client.add_team_membership(team_id, username)
   end
 
-  def find_team(name, repo)
-    client.org_teams(repo.organization.login).detect do |team|
-      team.name.downcase == name.downcase
-    end
+  def update_team(team_id, options)
+    client.update_team(team_id, options)
   end
 
-  def create_team(name, repo)
-    team_options = {
-      name: name,
-      repo_names: [repo.full_name],
-      permission: "pull"
-    }
-    client.create_team(repo.organization.login, team_options)
-  rescue Octokit::UnprocessableEntity => e
-    if team_exists_exception?(e)
-      find_team(name, repo)
-    else
-      raise
-    end
-  end
+  private
 
   def user_repos
-    repos = paginate { |page| client.repos(nil, page: page) }
-    authorized_repos(repos)
+    authorized_repos(client.repos)
   end
 
   def org_repos
     repos = orgs.flat_map do |org|
-      paginate { |page| client.org_repos(org[:login], page: page) }
+      client.org_repos(org[:login])
     end
 
     authorized_repos(repos)
-  end
-
-  def paginate
-    page = 1
-    results = []
-    all_pages_fetched = false
-
-    until all_pages_fetched do
-      page_results = yield(page)
-
-      if page_results.empty?
-        all_pages_fetched = true
-      else
-        results += page_results
-        page += 1
-      end
-    end
-
-    results
   end
 
   def orgs
@@ -237,13 +198,19 @@ class GithubApi
     repos.select { |repo| repo.permissions.admin }
   end
 
-  def team_exists_exception?(exception)
-    exception.errors.any? do |error|
-      error[:field] == "name" && error[:code] == "already_exists"
-    end
-  end
-
   def with_preview_client(&block)
     client.with_options(accept: PREVIEW_MEDIA_TYPE, &block)
+  end
+
+  def create_status(repo:, sha:, state:, description:)
+    client.create_status(
+      repo,
+      sha,
+      state,
+      context: "hound",
+      description: description
+    )
+  rescue Octokit::NotFound
+    # noop
   end
 end

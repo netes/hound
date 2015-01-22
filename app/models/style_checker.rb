@@ -24,23 +24,29 @@ class StyleChecker
 
   def files_to_check
     commit.files.select do |file|
-      !file.removed? && style_guide(file.filename).enabled?
+      file_style_guide = style_guide(file.filename)
+      !file.removed? && file_style_guide.enabled? && file_style_guide.file_included?(file)
     end
   end
 
   def style_guide(filename)
     style_guide_class = style_guide_class(filename)
-    style_guides[style_guide_class] ||= style_guide_class.new(config)
+    style_guides[style_guide_class] ||= style_guide_class.new(
+      config,
+      commit.repository_owner
+    )
   end
 
   def style_guide_class(filename)
     case filename
     when /.+\.rb\z/
       StyleGuide::Ruby
-    when /.+\.coffee\z/
+    when /.+\.coffee(\.js)?\z/
       StyleGuide::CoffeeScript
     when /.+\.js\z/
       StyleGuide::JavaScript
+    when /.+\.scss\z/
+      StyleGuide::Scss
     else
       StyleGuide::Unsupported
     end

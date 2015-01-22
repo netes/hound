@@ -1,15 +1,4 @@
-require "coffeelint"
-require "jshintrb"
-require "rubocop"
-
-require "fast_spec_helper"
-require "app/models/line"
-require "app/models/unchanged_line"
-require "app/models/repo_config"
-require "app/models/style_checker"
-require "app/models/violation"
-require "app/models/violations"
-Dir.glob("app/models/style_guide/*.rb", &method(:require))
+require "spec_helper"
 
 describe StyleChecker, "#violations" do
   it "returns a collection of computed violations" do
@@ -63,6 +52,18 @@ describe StyleChecker, "#violations" do
   end
 
   context "for a CoffeeScript file" do
+    it "is processed with a coffee.js extension" do
+      file = stub_commit_file("test.coffee.js", "foo ->")
+      commit = stub_commit(files: [file])
+      style_checker = StyleChecker.new(commit, stub_repo_config)
+      allow(RepoConfig).to receive(:new).and_return(stub_repo_config)
+
+      violations = style_checker.violations
+      messages = violations.flat_map(&:messages)
+
+      expect(messages).to eq ["Empty function"]
+    end
+
     context "with violations" do
       context "with CoffeeScript enabled" do
         it "returns violations" do
@@ -85,17 +86,11 @@ describe StyleChecker, "#violations" do
 
       context "with CoffeeScript disabled" do
         it "returns no violations" do
-          config = <<-YAML.strip_heredoc
-            coffee_script:
-              enabled: false
-          YAML
+          config = stub_repo_config(coffee_script: { enabled: false })
           file = stub_commit_file("test.coffee", "alert 'Hello World'")
-          commit = stub_commit(
-            file_content: config,
-            files: [file],
-          )
+          commit = stub_commit(files: [file])
 
-          violations = StyleChecker.new(commit, stub_repo_config).violations
+          violations = StyleChecker.new(commit, config).violations
 
           expect(violations).to be_empty
         end
@@ -105,17 +100,11 @@ describe StyleChecker, "#violations" do
     context "without violations" do
       context "with CoffeeScript enabled" do
         it "returns no violations" do
-          config = <<-YAML.strip_heredoc
-            coffee_script:
-              enabled: true
-          YAML
+          config = stub_repo_config(coffee_script: { enabled: true })
           file = stub_commit_file("test.coffee", "alert('Hello World')")
-          commit = stub_commit(
-            file_content: config,
-            files: [file],
-          )
+          commit = stub_commit(files: [file])
 
-          violations = StyleChecker.new(commit, stub_repo_config).violations
+          violations = StyleChecker.new(commit, config).violations
 
           expect(violations).to be_empty
         end
@@ -127,17 +116,11 @@ describe StyleChecker, "#violations" do
     context "with violations" do
       context "with JavaScript enabled" do
         it "returns violations" do
-          config = <<-YAML.strip_heredoc
-            java_script:
-              enabled: true
-          YAML
+          config = stub_repo_config(java_script: { enabled: true })
           file = stub_commit_file("test.js", "var test = 'test'")
-          commit = stub_commit(
-            file_content: config,
-            files: [file],
-          )
+          commit = stub_commit(files: [file])
 
-          violations = StyleChecker.new(commit, stub_repo_config).violations
+          violations = StyleChecker.new(commit, config).violations
           messages = violations.flat_map(&:messages)
 
           expect(messages).to include "Missing semicolon."
@@ -146,18 +129,11 @@ describe StyleChecker, "#violations" do
 
       context "with JavaScript disabled" do
         it "returns no violations" do
-          config = <<-YAML.strip_heredoc
-            java_script:
-              enabled: false
-          YAML
+          config = stub_repo_config(java_script: { enabled: false })
           file = stub_commit_file("test.js", "var test = 'test'")
-          commit = stub_commit(
-            file_content: config,
-            files: [file],
-          )
-          repo_config = RepoConfig.new(commit)
+          commit = stub_commit(files: [file])
 
-          violations = StyleChecker.new(commit, repo_config).violations
+          violations = StyleChecker.new(commit, config).violations
 
           expect(violations).to be_empty
         end
@@ -167,20 +143,77 @@ describe StyleChecker, "#violations" do
     context "without violations" do
       context "with JavaScript enabled" do
         it "returns no violations" do
-          config = <<-YAML.strip_heredoc
-            java_script:
-              enabled: true
-          YAML
+          config = stub_repo_config(java_script: { enabled: true })
           file = stub_commit_file("test.js", "var test = 'test';")
-          commit = stub_commit(
-            file_content: config,
-            files: [file],
-          )
+          commit = stub_commit(files: [file])
 
-          violations = StyleChecker.new(commit, stub_repo_config).violations
+          violations = StyleChecker.new(commit, config).violations
           messages = violations.flat_map(&:messages)
 
           expect(messages).not_to include "Missing semicolon."
+        end
+      end
+    end
+
+    context "an excluded file" do
+      it "returns no violations" do
+        config = stub_repo_config(java_script: { enabled: true, ignore_file: '.jshintignore' }, ignored_files: ["test.js"])
+        file = stub_commit_file("test.js", "var test = 'test'")
+        commit = stub_commit(files: [file])
+
+        violations = StyleChecker.new(commit, config).violations
+
+        expect(violations).to be_empty
+      end
+    end
+  end
+
+  context "for a SCSS file" do
+    context "with violations" do
+      context "with SCSS enabled" do
+        it "returns violations" do
+          file = stub_commit_file(
+            "test.scss",
+            ".table p.inner table td { background: red; }"
+          )
+          commit = stub_commit(files: [file])
+
+          violations = StyleChecker.new(commit, scss_enabled_config).violations
+          messages = violations.flat_map(&:messages)
+
+          expect(messages).to include(
+            "Selector should have depth of applicability no greater than 2, but was 4"
+          )
+        end
+      end
+
+      context "with SCSS disabled" do
+        it "returns no violations" do
+          file = stub_commit_file(
+            "test.scss",
+            ".table p.inner table td { background: red; }"
+          )
+          commit = stub_commit(files: [file])
+
+          violations = StyleChecker.new(commit, scss_disabled_config).violations
+
+          expect(violations).to be_empty
+        end
+      end
+    end
+
+    context "without violations" do
+      context "with SCSS enabled" do
+        it "returns no violations" do
+          file = stub_commit_file("test.scss", "table td { color: green; }")
+          commit = stub_commit(files: [file])
+
+          violations = StyleChecker.new(commit, scss_enabled_config).violations
+          messages = violations.flat_map(&:messages)
+
+          expect(messages).not_to include(
+            "Selector should have depth of applicability no greater than 3"
+          )
         end
       end
     end
@@ -197,25 +230,71 @@ describe StyleChecker, "#violations" do
     end
   end
 
+  context "a removed file" do
+    it "does not return a violation for the file" do
+      file = stub_commit_file("ruby.rb", "puts 123    ", removed: true)
+      commit = stub_commit(files: [file])
+
+      violations = StyleChecker.new(commit, stub_repo_config).violations
+      messages = violations.flat_map(&:messages)
+
+      expect(messages).to eq []
+    end
+  end
+
   private
 
-  def stub_repo_config(options = {})
-    double("RepoConfig", { enabled_for?: true, for: {} }.merge(options))
+  def stub_commit(file_contents: {}, **options)
+    defaults = {
+      file_content: "",
+      repository_owner: "some_org",
+      files: []
+    }
+
+    commit = double("PullRequest", defaults.merge(options))
+
+    file_contents.each do |filename, file_content|
+      allow(commit).to receive(:file_content).
+        with(filename).and_return(file_content)
+    end
+    commit
   end
 
-  def stub_commit(options = {})
-    double("Commit", { file_content: "", files: [] }.merge(options))
-  end
-
-  def stub_commit_file(filename, contents, line = nil)
+  def stub_commit_file(filename, contents, line = nil, removed: false)
     line ||= Line.new(content: "foo", number: 1, patch_position: 2)
     formatted_contents = "#{contents}\n"
     double(
       filename.split(".").first,
       filename: filename,
       content: formatted_contents,
-      removed?: false,
+      removed?: removed,
       line_at: line,
     )
+  end
+
+  class DummyConfig < Struct.new(:config)
+    def for key
+      config[key.to_sym] || {}
+    end
+
+    def enabled_for? key
+      self.for(key).fetch(:enabled){ true }
+    end
+
+    def ignored_javascript_files
+      config.fetch(:ignored_files){ [] }
+    end
+  end
+
+  def stub_repo_config(options = {})
+    DummyConfig.new(options)
+  end
+
+  def scss_enabled_config
+    stub_repo_config(scss: { enabled: true })
+  end
+
+  def scss_disabled_config
+    stub_repo_config(scss: { enabled: false })
   end
 end

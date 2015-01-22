@@ -1,11 +1,13 @@
 # Load and parse config files from GitHub repo
 class RepoConfig
   FILE_TYPES = {
-    ".yml" => "yaml",
-    ".json" => "json",
+    "ruby" => "yaml",
+    "java_script" => "json",
+    "coffee_script" => "json",
+    "scss" => "yaml",
   }
   HOUND_CONFIG_FILE = ".hound.yml"
-  STYLE_GUIDES = %w(ruby coffee_script java_script)
+  STYLE_GUIDES = %w(ruby coffee_script java_script scss)
   DEFAULT_CONFIG = {
     "pull_requests" => { "enabled" => true },
     "pushes" => { "enabled" => false }
@@ -25,10 +27,20 @@ class RepoConfig
       config_file_path = config_path_for(style_guide_name)
 
       if config_file_path
-        load_file(config_file_path)
+        load_file(config_file_path, FILE_TYPES.fetch(style_guide_name))
       else
         {}
       end
+    end
+  end
+
+  def ignored_javascript_files
+    ignore_file_content = load_javascript_ignore
+
+    if ignore_file_content.present?
+      ignore_file_content.split("\n")
+    else
+      []
     end
   end
 
@@ -45,7 +57,7 @@ class RepoConfig
 
   def hound_config
     @hound_config ||= begin
-      content = load_file(HOUND_CONFIG_FILE)
+      content = load_file(HOUND_CONFIG_FILE, "yaml")
       if content.is_a?(Hash)
         DEFAULT_CONFIG.merge(content)
       else
@@ -59,15 +71,21 @@ class RepoConfig
       hound_config[style_guide_name]["config_file"]
   end
 
-  def load_file(file_path)
+  def load_file(file_path, file_type)
     config_file_content = commit.file_content(file_path)
-    extension = File.extname(file_path)
 
     if config_file_content.present?
-      send("parse_#{FILE_TYPES[extension]}", config_file_content)
+      send("parse_#{file_type}", config_file_content)
     else
       {}
     end
+  end
+
+  def load_javascript_ignore
+    ignore_file = hound_config.fetch("java_script", {}).
+      fetch("ignore_file", ".jshintignore")
+
+    commit.file_content(ignore_file)
   end
 
   def parse_yaml(content)

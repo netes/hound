@@ -1,9 +1,7 @@
 # Base to contain common style guide logic
 module StyleGuide
-  CONFIG_DIR = "config/style_guides"
-
   class Base
-    pattr_initialize :repo_config
+    pattr_initialize :repo_config, :repository_owner
 
     def enabled?
       repo_config.enabled_for?(name)
@@ -11,6 +9,10 @@ module StyleGuide
 
     def violations_in_file(_file)
       raise NotImplementedError.new("must implement ##{__method__}")
+    end
+
+    def file_included?(_file)
+      true
     end
 
     private
