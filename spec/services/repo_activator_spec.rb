@@ -73,11 +73,11 @@ describe RepoActivator do
         activator = build_activator
         error = Octokit::Error.new
         allow(AddHoundToRepo).to receive(:run).and_raise(error)
-        allow(Raven).to receive(:capture_exception)
+        allow(Rollbar).to receive(:log)
 
         activator.activate
 
-        expect(Raven).to have_received(:capture_exception).with(error)
+        expect(Rollbar).to have_received(:log).with(error)
       end
 
       it "only swallows Octokit errors" do

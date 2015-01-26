@@ -35,6 +35,11 @@ gem "stripe_event"
 gem "uglifier", ">= 1.0.3"
 gem "unicorn"
 
+gem "dotenv"
+gem "dotenv-deployment"
+gem "rollbar"
+gem "rubocop-rspec"
+
 group :staging, :production do
   gem "rails_12factor"
 end
@@ -45,6 +50,13 @@ group :development, :test do
   gem "konacha"
   gem "poltergeist"
   gem "rspec-rails", ">= 2.14"
+end
+
+group :development do
+  gem "capistrano", require: false
+  gem "capistrano-rvm", require: false
+  gem "capistrano-resque", require: false
+  gem "capistrano-rails", require: false
 end
 
 group :test do

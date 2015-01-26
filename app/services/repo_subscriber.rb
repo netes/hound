@@ -48,7 +48,7 @@ class RepoSubscriber
   private
 
   def report_exception(error)
-    Raven.capture_exception(
+    Rollbar.log(
       error,
       extra: { user_id: user.id, repo_id: repo.id }
     )

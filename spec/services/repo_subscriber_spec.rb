@@ -62,11 +62,11 @@ describe RepoSubscriber do
         user = create(:user, repos: [repo])
         stub_customer_create_request(user)
         stub_failed_subscription_create_request(repo.plan_type)
-        allow(Raven).to receive(:capture_exception)
+        allow(Rollbar).to receive(:log)
 
         RepoSubscriber.subscribe(repo, user, "cardtoken")
 
-        expect(Raven).to have_received(:capture_exception)
+        expect(Rollbar).to have_received(:log)
       end
     end
 
@@ -139,11 +139,11 @@ describe RepoSubscriber do
         user = build_stubbed(:user, repos: [repo])
         stub_customer_create_request(user)
         stub_failed_subscription_destroy_request
-        allow(Raven).to receive(:capture_exception)
+        allow(Rollbar).to receive(:log)
 
         RepoSubscriber.unsubscribe(repo, user)
 
-        expect(Raven).to have_received(:capture_exception)
+        expect(Rollbar).to have_received(:log)
       end
     end
   end

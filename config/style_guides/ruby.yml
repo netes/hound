@@ -1,259 +1,292 @@
+require: rubocop-rspec
+
 AllCops:
   Exclude:
     - db/schema.rb
+    - db/migrate/*
+    - vendor/*
+  RunRailsCops: true
 
-AccessorMethodName:
+# Rails
+
+Rails/ActionFilter:
+  Enabled: true
+
+Rails/Delegate:
+  Enabled: true
+
+Rails/HasAndBelongsToMany:
   Enabled: false
 
-ActionFilter:
+# RSpec
+
+RSpec/DescribeClass:
+  Exclude:
+    - spec/features/*
+    - spec/requests/*
+    - spec/lib/tasks/*
+
+# Style
+
+Style/AccessorMethodName:
+  Enabled: true
+
+Style/Alias:
+  Enabled: true
+
+Style/AlignHash:
   Enabled: false
 
-Alias:
+Style/AlignParameters:
+  Enabled: true
+  EnforcedStyle: with_fixed_indentation
+
+Style/ArrayJoin:
+  Enabled: true
+
+Style/AsciiComments:
+  Enabled: true
+
+Style/AsciiIdentifiers:
+  Enabled: true
+
+Style/Attr:
+  Enabled: true
+
+Metrics/BlockNesting:
+  Enabled: true
+
+Style/CaseEquality:
+  Enabled: true
+
+Style/CharacterLiteral:
+  Enabled: true
+
+Style/ClassAndModuleChildren:
+  Enabled: true
+
+Metrics/ClassLength:
+  Enabled: true
+
+Style/ClassVars:
+  Enabled: true
+
+Style/CollectionMethods:
   Enabled: false
 
-ArrayJoin:
+Style/ColonMethodCall:
+  Enabled: true
+
+Style/CommentAnnotation:
+  Enabled: true
+
+Metrics/CyclomaticComplexity:
+  Enabled: true
+
+Style/DeprecatedHashMethods:
+  Enabled: true
+
+Style/Documentation:
   Enabled: false
 
-AsciiComments:
+Style/DotPosition:
+  EnforcedStyle: leading
+
+Style/DoubleNegation:
+  Enabled: true
+
+Style/EachWithObject:
+  Enabled: true
+
+Style/EmptyLiteral:
+  Enabled: true
+
+Style/Encoding:
+  Enabled: true
+
+Style/EvenOdd:
+  Enabled: true
+
+Style/FileName:
   Enabled: false
 
-AsciiIdentifiers:
+Style/FlipFlop:
+  Enabled: true
+
+Style/FormatString:
+  Enabled: true
+  EnforcedStyle: percent
+
+Style/GlobalVars:
+  Enabled: true
+
+Style/GuardClause:
+  Enabled: true
+
+Style/IfUnlessModifier:
   Enabled: false
 
-Attr:
+Style/IfWithSemicolon:
+  Enabled: true
+
+Style/Lambda:
+  Enabled: true
+
+Style/LambdaCall:
+  Enabled: true
+
+Style/LineEndConcatenation:
+  Enabled: true
+
+Metrics/LineLength:
+  Max: 100
+  Exclude:
+  - db/seeds.rb
+
+Metrics/MethodLength:
+  Enabled: true
+
+Style/MethodDefParentheses:
   Enabled: false
 
-BlockNesting:
+Style/DefWithParentheses:
+  Enabled: true
+
+Style/ModuleFunction:
+  Enabled: true
+
+Style/NegatedIf:
+  Enabled: true
+
+Style/NegatedWhile:
+  Enabled: true
+
+Style/Next:
+  Enabled: true
+
+Style/NilComparison:
+  Enabled: true
+
+Style/Not:
+  Enabled: true
+
+Style/NumericLiterals:
+  Enabled: true
+
+Style/OneLineConditional:
   Enabled: false
 
-CaseEquality:
-  Enabled: false
+Style/OpMethod:
+  Enabled: true
 
-CharacterLiteral:
-  Enabled: false
+Metrics/ParameterLists:
+  Enabled: true
 
-ClassAndModuleChildren:
-  Enabled: false
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%': '{}'
 
-ClassLength:
-  Enabled: false
+Style/PerlBackrefs:
+  Enabled: true
 
-ClassVars:
-  Enabled: false
-
-CollectionMethods:
-  PreferredMethods:
-    find: detect
-    reduce: inject
-    collect: map
-    find_all: select
-
-ColonMethodCall:
-  Enabled: false
-
-CommentAnnotation:
-  Enabled: false
-
-CyclomaticComplexity:
-  Enabled: false
-
-Delegate:
-  Enabled: false
-
-DeprecatedHashMethods:
-  Enabled: false
-
-Documentation:
-  Enabled: false
-
-DotPosition:
-  EnforcedStyle: trailing
-
-DoubleNegation:
-  Enabled: false
-
-EachWithObject:
-  Enabled: false
-
-EmptyLiteral:
-  Enabled: false
-
-Encoding:
-  Enabled: false
-
-EvenOdd:
-  Enabled: false
-
-FileName:
-  Enabled: false
-
-FlipFlop:
-  Enabled: false
-
-FormatString:
-  Enabled: false
-
-GlobalVars:
-  Enabled: false
-
-GuardClause:
-  Enabled: false
-
-IfUnlessModifier:
-  Enabled: false
-
-IfWithSemicolon:
-  Enabled: false
-
-InlineComment:
-  Enabled: false
-
-Lambda:
-  Enabled: false
-
-LambdaCall:
-  Enabled: false
-
-LineEndConcatenation:
-  Enabled: false
-
-LineLength:
-  Max: 80
-
-MethodLength:
-  Enabled: false
-
-ModuleFunction:
-  Enabled: false
-
-NegatedIf:
-  Enabled: false
-
-NegatedWhile:
-  Enabled: false
-
-Next:
-  Enabled: false
-
-NilComparison:
-  Enabled: false
-
-Not:
-  Enabled: false
-
-NumericLiterals:
-  Enabled: false
-
-OneLineConditional:
-  Enabled: false
-
-OpMethod:
-  Enabled: false
-
-ParameterLists:
-  Enabled: false
-
-PercentLiteralDelimiters:
-  Enabled: false
-
-PerlBackrefs:
-  Enabled: false
-
-PredicateName:
+Style/PredicateName:
   NamePrefixBlacklist:
     - is_
 
-Proc:
+Style/Proc:
+  Enabled: true
+
+Style/RaiseArgs:
+  Enabled: true
+
+Style/RegexpLiteral:
+  Enabled: true
+
+Style/SelfAssignment:
+  Enabled: true
+
+Style/SingleLineBlockParams:
   Enabled: false
 
-RaiseArgs:
+Style/SingleLineMethods:
   Enabled: false
 
-RegexpLiteral:
+Style/SignalException:
+  Enabled: true
+
+Style/SpaceBeforeBlockBraces:
   Enabled: false
 
-SelfAssignment:
+Style/SpecialGlobalVars:
+  Enabled: true
+
+Style/StringLiterals:
   Enabled: false
 
-SingleLineBlockParams:
+Style/VariableInterpolation:
+  Enabled: true
+
+Style/TrailingComma:
   Enabled: false
 
-SingleLineMethods:
+Style/TrivialAccessors:
+  Enabled: true
+
+Style/VariableInterpolation:
+  Enabled: true
+
+Style/WhenThen:
+  Enabled: true
+
+Style/WhileUntilModifier:
   Enabled: false
 
-SignalException:
-  Enabled: false
-
-SpecialGlobalVars:
-  Enabled: false
-
-StringLiterals:
-  EnforcedStyle: double_quotes
-
-VariableInterpolation:
-  Enabled: false
-
-TrailingComma:
-  Enabled: false
-
-TrivialAccessors:
-  Enabled: false
-
-VariableInterpolation:
-  Enabled: false
-
-WhenThen:
-  Enabled: false
-
-WhileUntilModifier:
-  Enabled: false
-
-WordArray:
-  Enabled: false
+Style/WordArray:
+  Enabled: true
 
 # Lint
 
-AmbiguousOperator:
+Lint/AmbiguousOperator:
+  Enabled: true
+
+Lint/AmbiguousRegexpLiteral:
+  Enabled: true
+
+Lint/AssignmentInCondition:
+  Enabled: true
+
+Lint/ConditionPosition:
+  Enabled: true
+
+Lint/DeprecatedClassMethods:
+  Enabled: true
+
+Lint/ElseLayout:
+  Enabled: true
+
+Lint/HandleExceptions:
+  Enabled: true
+
+Lint/InvalidCharacterLiteral:
   Enabled: false
 
-AmbiguousRegexpLiteral:
-  Enabled: false
+Lint/LiteralInCondition:
+  Enabled: true
 
-AssignmentInCondition:
-  Enabled: false
+Lint/LiteralInInterpolation:
+  Enabled: true
 
-ConditionPosition:
-  Enabled: false
+Lint/Loop:
+  Enabled: true
 
-DeprecatedClassMethods:
-  Enabled: false
+Lint/ParenthesesAsGroupedExpression:
+  Enabled: true
 
-ElseLayout:
-  Enabled: false
+Lint/RequireParentheses:
+  Enabled: true
 
-HandleExceptions:
-  Enabled: false
+Lint/UnderscorePrefixedVariableName:
+  Enabled: true
 
-InvalidCharacterLiteral:
-  Enabled: false
-
-LiteralInCondition:
-  Enabled: false
-
-LiteralInInterpolation:
-  Enabled: false
-
-Loop:
-  Enabled: false
-
-ParenthesesAsGroupedExpression:
-  Enabled: false
-
-RequireParentheses:
-  Enabled: false
-
-UnderscorePrefixedVariableName:
-  Enabled: false
-
-Void:
-  Enabled: false
+Lint/Void:
+  Enabled: true
