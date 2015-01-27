@@ -2,7 +2,7 @@ class Event
   pattr_initialize :payload, :github_token
 
   def relevant?
-    config.enabled_for?(name)
+    commits.any? && config.enabled_for?(name)
   end
 
   def files
