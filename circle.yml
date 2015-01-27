@@ -1,3 +1,10 @@
+checkout:
+  post:
+    - git config --global user.email "sayhi@circleci.com"
+    - git config --global user.name "CircleCI"
+    - git remote add -f thoughtbot git@github.com:thoughtbot/hound.git
+    - git merge thoughtbot/master --no-edit
+    - git push origin master
 test:
   override:
     - bundle exec rspec --color spec --format progress
