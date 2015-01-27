@@ -10,7 +10,11 @@ class RepoConfig
   STYLE_GUIDES = %w(ruby coffee_script java_script scss)
   DEFAULT_CONFIG = {
     "pull_requests" => { "enabled" => true },
-    "pushes" => { "enabled" => false }
+    "pushes" => { "enabled" => true },
+    "java_script" => { "enabled" => true },
+    "coffee_script" => { "enabled" => true },
+    "scss" => { "enabled" => true },
+    "ruby" => { "enabled" => true },
   }
 
   pattr_initialize :commit
