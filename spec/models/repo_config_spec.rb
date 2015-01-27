@@ -13,22 +13,20 @@ describe RepoConfig do
         repo_config = RepoConfig.new(commit)
 
         expect(repo_config).to be_enabled_for("ruby")
-        expect(repo_config).not_to be_enabled_for("coffee_script")
-        expect(repo_config).not_to be_enabled_for("java_script")
+        expect(repo_config).to be_enabled_for("coffee_script")
+        expect(repo_config).to be_enabled_for("java_script")
       end
     end
 
     context "with invalid indentation in Hound config" do
-      it "returns false for all style guides" do
+      it "returns false for the style guide" do
         commit = double("Commit", file_content: <<-EOS.strip_heredoc)
           coffee_script:
-          enabled: true
+          enabled: false
         EOS
         repo_config = RepoConfig.new(commit)
 
-        RepoConfig::STYLE_GUIDES.each do |style_guide_name|
-          expect(repo_config).not_to be_enabled_for(style_guide_name)
-        end
+        expect(repo_config).not_to be_enabled_for("coffee_script")
       end
     end
 
@@ -38,9 +36,11 @@ describe RepoConfig do
           ruby:
             enabled: false
           coffee_script:
-            hello: world
+            enabled: false
           java_script:
-            hello: world
+            enabled: false
+          scss:
+            enabled: false
         EOS
         repo_config = RepoConfig.new(commit)
 
@@ -110,8 +110,8 @@ describe RepoConfig do
           repo_config = RepoConfig.new(commit)
 
           expect(repo_config).to be_enabled_for("ruby")
-          expect(repo_config).not_to be_enabled_for("coffee_script")
-          expect(repo_config).not_to be_enabled_for("java_script")
+          expect(repo_config).to be_enabled_for("coffee_script")
+          expect(repo_config).to be_enabled_for("java_script")
         end
       end
 
@@ -129,7 +129,6 @@ describe RepoConfig do
 
           expect(repo_config).to be_enabled_for("ruby")
           expect(repo_config).to be_enabled_for("coffee_script")
-          expect(repo_config).not_to be_enabled_for("java_script")
         end
       end
     end
@@ -140,7 +139,6 @@ describe RepoConfig do
         config = RepoConfig.new(commit)
 
         expect(config).to be_enabled_for("ruby")
-        expect(config).not_to be_enabled_for("coffee_script")
       end
     end
   end
