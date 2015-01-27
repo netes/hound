@@ -52,11 +52,11 @@ class RepoConfig
 
   def enabled_in_config?(name)
     config = hound_config[name] || hound_config[name.camelize]
-    config && (config["enabled"] == true || config["Enabled"] == true)
+    !!config && (config["enabled"] == true || config["Enabled"] == true)
   end
 
   def legacy_config?
-    (hound_config.keys & STYLE_GUIDES).empty?
+    hound_config.keys.any?{ |k| k.first.upcase == k.first }
   end
 
   def hound_config
