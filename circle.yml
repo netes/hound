@@ -4,7 +4,7 @@ checkout:
     - git config --global user.name "CircleCI"
     - git remote add thoughtbot git@github.com:thoughtbot/hound.git || true
     - git fetch thoughtbot
-    - git rebase thoughtbot/master --no-edit && git push origin master
+    - git merge thoughtbot/master --no-edit --squash && git push origin master
 test:
   override:
     - bundle exec rspec --color spec --format progress
