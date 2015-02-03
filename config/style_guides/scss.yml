@@ -86,7 +86,7 @@ linters:
     enabled: false
 
   PropertySortOrder:
-    enabled: true
+    enabled: false
     ignore_unspecified: false
     severity: warning
 
@@ -143,13 +143,13 @@ linters:
 
   StringQuotes:
     enabled: true
-    style: double_quotes
+    style: single_quotes
 
   TrailingSemicolon:
     enabled: true
 
   TrailingZero:
-    enabled: false
+    enabled: true
 
   UnnecessaryMantissa:
     enabled: true
@@ -163,8 +163,15 @@ linters:
   UrlQuotes:
     enabled: true
 
-  VendorPrefixes:
+  VariableForProperty:
     enabled: true
+    properties:
+      - color
+      - font
+      - font-size
+
+  VendorPrefixes:
+    enabled: false
     identifier_list: bourbon
     include: []
     exclude: []
