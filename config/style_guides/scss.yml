@@ -109,6 +109,7 @@ linters:
   SelectorFormat:
     enabled: true
     convention: hyphenated_BEM
+    placeholder_convention: hyphenated_lowercase
 
   Shorthand:
     enabled: true
