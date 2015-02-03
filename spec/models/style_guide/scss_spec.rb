@@ -13,22 +13,22 @@ describe StyleGuide::Scss do
         end
       end
 
-      describe "for single quotes" do
+      describe "for double quotes" do
         it "has one violation" do
-          content = ".a { display: 'none'; }"
+          content = '.a { display: "none"; }'
 
           expect(violations_in(content)).to include(
-            "Prefer double-quoted strings"
+            "Prefer single quoted strings"
           )
         end
       end
 
-      describe "for no leading zeros" do
+      describe "for leading zeros" do
         it "has one violation" do
-          content = ".a { margin: .5em; }"
+          content = ".a { margin: 0.5em; }"
 
           expect(violations_in(content)).to include(
-            "`.5` should be written with a leading zero as `0.5`"
+            "`0.5` should be written without a leading zero as `.5`"
           )
         end
       end
@@ -70,7 +70,7 @@ describe StyleGuide::Scss do
       it "it reports errors only for the given file" do
         style_guide = build_style_guide
         bad_content = ".a { .b { .c { background: #000; } } }"
-        good_content = ".a { margin: 0.5em; }\n"
+        good_content = ".a { margin: .5em; }\n"
 
         bad_run = style_guide.violations_in_file(build_file(bad_content))
         good_run = style_guide.violations_in_file(build_file(good_content))
