@@ -1,4 +1,4 @@
-.env
+.env*
 .foreman
 /.bundle
 /db/*.sqlite3
