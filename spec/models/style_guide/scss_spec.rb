@@ -17,7 +17,7 @@ describe StyleGuide::Scss do
         it "has one violation" do
           content = '.a { display: "none"; }'
 
-          expect(violations_in(content)).to include(
+          expect(violations_in(content)).to_not include(
             "Prefer single quoted strings"
           )
         end
