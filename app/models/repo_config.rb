@@ -1,13 +1,13 @@
 # Load and parse config files from GitHub repo
 class RepoConfig
+  HOUND_CONFIG = ".hound.yml"
+  LANGUAGES = %w(ruby coffee_script java_script scss)
   FILE_TYPES = {
     "ruby" => "yaml",
     "java_script" => "json",
     "coffee_script" => "json",
     "scss" => "yaml",
   }
-  HOUND_CONFIG_FILE = ".hound.yml"
-  STYLE_GUIDES = %w(ruby coffee_script java_script scss)
   DEFAULT_CONFIG = {
     "pull_requests" => { "enabled" => true },
     "pushes" => { "enabled" => true },
@@ -19,19 +19,19 @@ class RepoConfig
 
   pattr_initialize :commit
 
-  def enabled_for?(style_guide_name)
-    style_guide_name == "ruby" && legacy_config? ||
-      enabled_in_config?(style_guide_name)
+  def enabled_for?(language)
+    options = options_for(language)
+    options.nil? || !disabled?(language)
   end
 
-  def for(style_guide_name)
-    if style_guide_name == "ruby" && legacy_config?
+  def for(language)
+    if language == "ruby" && legacy?
       hound_config.except(*DEFAULT_CONFIG.keys)
     else
-      config_file_path = config_path_for(style_guide_name)
+      config_file_path = config_path_for(language)
 
       if config_file_path
-        load_file(config_file_path, FILE_TYPES.fetch(style_guide_name))
+        load_file(config_file_path, FILE_TYPES.fetch(language))
       else
         {}
       end
@@ -50,29 +50,37 @@ class RepoConfig
 
   private
 
-  def enabled_in_config?(name)
-    config = hound_config[name] || hound_config[name.camelize]
-    !!config && (config["enabled"] == true || config["Enabled"] == true)
+  def options_for(language)
+    hound_config[language] || hound_config[language.camelize]
   end
 
-  def legacy_config?
-    hound_config.keys.any?{ |k| k.first.upcase == k.first }
+  def disabled?(language)
+    options = options_for(language)
+    !!options && (options["enabled"] == false || options["Enabled"] == false)
   end
 
   def hound_config
     @hound_config ||= begin
-      content = load_file(HOUND_CONFIG_FILE, "yaml")
-      if content.is_a?(Hash)
-        DEFAULT_CONFIG.merge(content)
+      config = load_file(HOUND_CONFIG, "yaml")
+      if config.is_a?(Hash)
+        DEFAULT_CONFIG.merge(config)
       else
         DEFAULT_CONFIG
       end
     end
   end
 
-  def config_path_for(style_guide_name)
-    hound_config[style_guide_name] &&
-      hound_config[style_guide_name]["config_file"]
+  def legacy?
+    hound_config.keys.any?{ |k| k.first.upcase == k.first }
+  end
+
+  def configured_languages
+    hound_config.keys
+  end
+
+  def config_path_for(language)
+    hound_config[language] &&
+      hound_config[language]["config_file"]
   end
 
   def load_file(file_path, file_type)

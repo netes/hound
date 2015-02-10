@@ -5,8 +5,8 @@ require "app/models/repo_config"
 
 describe RepoConfig do
   describe "#enabled_for?" do
-    context "with invalid format in Hound config" do
-      it "only returns true for ruby" do
+    context "with invalid config" do
+      it "returns true for all languages" do
         commit = double("Commit", file_content: <<-EOS.strip_heredoc)
           hello world!
         EOS
@@ -19,54 +19,10 @@ describe RepoConfig do
     end
 
     context "with invalid indentation in Hound config" do
-      it "returns false for the style guide" do
+      it "returns true for the style guide" do
         commit = double("Commit", file_content: <<-EOS.strip_heredoc)
           coffee_script:
           enabled: false
-        EOS
-        repo_config = RepoConfig.new(commit)
-
-        expect(repo_config).not_to be_enabled_for("coffee_script")
-      end
-    end
-
-    context "when all style guides are disabled" do
-      it "returns false for all style guides" do
-        commit = double("Commit", file_content: <<-EOS.strip_heredoc)
-          ruby:
-            enabled: false
-          coffee_script:
-            enabled: false
-          java_script:
-            enabled: false
-          scss:
-            enabled: false
-        EOS
-        repo_config = RepoConfig.new(commit)
-
-        RepoConfig::STYLE_GUIDES.each do |style_guide_name|
-          expect(repo_config).not_to be_enabled_for(style_guide_name)
-        end
-      end
-    end
-
-    context "when Ruby is enabled" do
-      it "returns true for ruby" do
-        commit = double("Commit", file_content: <<-EOS.strip_heredoc)
-          ruby:
-            enabled: true
-        EOS
-        repo_config = RepoConfig.new(commit)
-
-        expect(repo_config).to be_enabled_for("ruby")
-      end
-    end
-
-    context "when CoffeeScript is enabled" do
-      it "returns true for coffee_script" do
-        commit = double("Commit", file_content: <<-EOS.strip_heredoc)
-          coffee_script:
-            enabled: true
         EOS
         repo_config = RepoConfig.new(commit)
 
@@ -74,33 +30,49 @@ describe RepoConfig do
       end
     end
 
-    context "when JavaScript is enabled" do
-      it "returns true for java_script" do
+    context "when all languages are enabled" do
+      it "returns false for all languages" do
         commit = double("Commit", file_content: <<-EOS.strip_heredoc)
+          ruby:
+            enabled: true
+          coffee_script:
+            enabled: true
           java_script:
             enabled: true
-        EOS
-        repo_config = RepoConfig.new(commit)
-
-        expect(repo_config).to be_enabled_for("java_script")
-      end
-    end
-
-    context "when SCSS is enabled" do
-      it "returns true for scss" do
-        commit = double("Commit", file_content: <<-EOS.strip_heredoc)
           scss:
             enabled: true
         EOS
         repo_config = RepoConfig.new(commit)
 
-        expect(repo_config).to be_enabled_for("scss")
+        RepoConfig::LANGUAGES.each do |language|
+          expect(repo_config).to be_enabled_for(language)
+        end
+      end
+    end
+
+    context "when all languages are disabled" do
+      it "returns false for all languages" do
+        commit = double("Commit", file_content: <<-EOS.strip_heredoc)
+          ruby:
+            enabled: false
+          coffee_script:
+            enabled: false
+          java_script:
+            enabled: false
+          scss:
+            enabled: false
+        EOS
+        repo_config = RepoConfig.new(commit)
+
+        RepoConfig::LANGUAGES.each do |language|
+          expect(repo_config).not_to be_enabled_for(language)
+        end
       end
     end
 
     context "with legacy config file" do
-      context "when no style guide is enabled" do
-        it "only returns true for ruby" do
+      context "when no language is enabled or disabled" do
+        it "returns true for all languages" do
           commit = double("Commit", file_content: <<-EOS.strip_heredoc)
             LineLength:
               Max: 80
@@ -115,30 +87,39 @@ describe RepoConfig do
         end
       end
 
-      context "when CoffeeScript is enabled" do
-        it "returns true for coffee_script and ruby" do
+      context "when all languages are enabled" do
+        it "returns true for all languages" do
           commit = double("Commit", file_content: <<-EOS.strip_heredoc)
-            CoffeeScript:
-              Enabled: true
             LineLength:
               Max: 80
             DotPosition:
               EnforcedStyle: trailing
+            Ruby:
+              Enabled: true
+            JavaScript:
+              Enabled: true
+            CoffeeScript:
+              Enabled: true
+            SCSS:
+              Enabled: true
           EOS
           repo_config = RepoConfig.new(commit)
 
-          expect(repo_config).to be_enabled_for("ruby")
-          expect(repo_config).to be_enabled_for("coffee_script")
+          RepoConfig::LANGUAGES.each do |language|
+            expect(repo_config).to be_enabled_for(language)
+          end
         end
       end
     end
 
     context "when there is no Hound config file" do
-      it "returns true for ruby" do
+      it "returns true for all languages" do
         commit = double("Commit", file_content: nil)
-        config = RepoConfig.new(commit)
+        repo_config = RepoConfig.new(commit)
 
-        expect(config).to be_enabled_for("ruby")
+        RepoConfig::LANGUAGES.each do |language|
+          expect(repo_config).to be_enabled_for(language)
+        end
       end
     end
   end
@@ -239,8 +220,8 @@ describe RepoConfig do
         commit = double("Commit", file_content: nil)
         config = RepoConfig.new(commit)
 
-        RepoConfig::STYLE_GUIDES.each do |style_guide_name|
-          expect(config.for(style_guide_name)).to eq({})
+        RepoConfig::LANGUAGES.each do |language|
+          expect(config.for(language)).to eq({})
         end
       end
     end
@@ -317,7 +298,7 @@ describe RepoConfig do
       commit = double("Commit")
       hound_config = configuration.delete(:hound_config)
       allow(commit).to receive(:file_content).
-        with(RepoConfig::HOUND_CONFIG_FILE).and_return(hound_config)
+        with(RepoConfig::HOUND_CONFIG).and_return(hound_config)
 
       configuration.each do |filename, contents|
         allow(commit).to receive(:file_content).

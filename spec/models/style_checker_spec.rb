@@ -15,7 +15,7 @@ describe StyleChecker, "#violations" do
   end
 
   context "for a Ruby file" do
-    context "with violations" do
+    context "with style violations" do
       it "returns violations" do
         file = stub_commit_file("ruby.rb", "puts 123    ")
         commit = stub_commit(files: [file])
@@ -27,7 +27,7 @@ describe StyleChecker, "#violations" do
       end
     end
 
-    context "with violation on unchanged line" do
+    context "with style violation on unchanged line" do
       it "returns no violations" do
         file = stub_commit_file("foo.rb", "'wrong quotes'", UnchangedLine.new)
         commit = stub_commit(files: [file])
@@ -38,7 +38,7 @@ describe StyleChecker, "#violations" do
       end
     end
 
-    context "without violations" do
+    context "without style violations" do
       it "returns no violations" do
         file = stub_commit_file("ruby.rb", "puts 123")
         commit = stub_commit(files: [file])
