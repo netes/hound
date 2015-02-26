@@ -7,6 +7,10 @@ class PullRequest < Event
     super && (opened? || synchronize?)
   end
 
+  def repository_owner_name
+    payload.repository_owner_name
+  end
+
   def opened?
     payload.action == "opened"
   end
@@ -20,6 +24,6 @@ class PullRequest < Event
   def head_commit
     Commit.new(full_repo_name, payload.head_sha, api,
       pull_request_number: payload.pull_request_number,
-      repository_owner: payload.repository_owner)
+      repository_owner_name: payload.repository_owner_name)
   end
 end

@@ -7,7 +7,7 @@ describe PullRequest do
   describe "#opened?" do
     context "when payload action is opened" do
       it "returns true" do
-        pull_request = PullRequest.new(payload_stub(action: "opened"), ENV["HOUND_GITHUB_TOKEN"])
+        pull_request = PullRequest.new(payload_stub(action: "opened"))
 
         expect(pull_request).to be_opened
       end
@@ -16,7 +16,7 @@ describe PullRequest do
     context "when payload action is not opened" do
       it "returns false" do
         payload = payload_stub(action: "notopened")
-        pull_request = PullRequest.new(payload, ENV["HOUND_GITHUB_TOKEN"])
+        pull_request = PullRequest.new(payload)
 
         expect(pull_request).not_to be_opened
       end
@@ -27,7 +27,7 @@ describe PullRequest do
     context "when payload action is synchronize" do
       it "returns true" do
         payload = payload_stub(action: "synchronize")
-        pull_request = PullRequest.new(payload, ENV["HOUND_GITHUB_TOKEN"])
+        pull_request = PullRequest.new(payload)
 
         expect(pull_request).to be_synchronize
       end
@@ -36,7 +36,7 @@ describe PullRequest do
     context "when payload action is not synchronize" do
       it "returns false" do
         payload = payload_stub(action: "notsynchronize")
-        pull_request = PullRequest.new(payload, ENV["HOUND_GITHUB_TOKEN"])
+        pull_request = PullRequest.new(payload)
 
         expect(pull_request).not_to be_synchronize
       end

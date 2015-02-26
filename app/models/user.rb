@@ -1,27 +1,19 @@
 class User < ActiveRecord::Base
   include ActiveModel::ForbiddenAttributesProtection
 
-  has_many :memberships
+  has_many :memberships, dependent: :destroy
   has_many :repos, through: :memberships
   has_many :subscribed_repos, through: :subscriptions, source: :repo
   has_many :subscriptions
 
   delegate(
     :card_last4,
-    :card_brand,
     to: :payment_gateway_customer
   )
 
   validates :github_username, presence: true
 
   before_create :generate_remember_token
-
-  def self.set_refreshing_repos(user_id)
-    updated_records = where(id: user_id, refreshing_repos: false).
-      update_all(refreshing_repos: true)
-
-    updated_records == 1
-  end
 
   def to_s
     github_username

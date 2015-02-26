@@ -38,13 +38,15 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.3.6)
+    addressable (2.3.7)
     analytics-ruby (2.0.6)
     angular_rails_csrf (1.0.3)
       rails (>= 3, < 5)
     angularjs-rails (1.2.22)
     arel (6.0.0)
     ast (2.0.0)
+    astrolabe (1.3.0)
+      parser (>= 2.2.0.pre.3, < 3.0)
     attr_extras (3.1.0)
     bourbon (4.1.0)
       sass (~> 3.3)
@@ -106,7 +108,7 @@ GEM
     dotenv-rails (0.11.1)
       dotenv (= 0.11.1)
     erubis (2.7.0)
-    execjs (2.2.1)
+    execjs (2.3.0)
     factory_girl (4.4.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.4.1)
@@ -141,7 +143,7 @@ GEM
     jquery-rails (3.1.1)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
-    jshintrb (0.2.4)
+    jshintrb (0.3.0)
       execjs
       multi_json (>= 1.3)
       rake
@@ -183,7 +185,7 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (~> 1.2)
-    octokit (3.7.0)
+    octokit (3.8.0)
       sawyer (~> 0.6.0, >= 0.5.3)
     omniauth (1.2.2)
       hashie (>= 1.2, < 4)
@@ -198,7 +200,7 @@ GEM
       omniauth (~> 1.2)
     paranoia (2.0.2)
       activerecord (~> 4.0)
-    parser (2.2.0.2)
+    parser (2.2.0.3)
       ast (>= 1.1, < 3.0)
     pg (0.17.1)
     phantomjs (1.9.8.0)
@@ -207,7 +209,7 @@ GEM
       cliver (~> 0.3.1)
       multi_json (~> 1.0)
       websocket-driver (>= 0.2.0)
-    powerpack (0.0.9)
+    powerpack (0.1.0)
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
@@ -248,8 +250,6 @@ GEM
     redis (3.2.0)
     redis-namespace (1.5.1)
       redis (~> 3.0, >= 3.0.4)
-    responders (2.0.2)
-      railties (>= 4.2.0.alpha, < 5)
     resque (1.25.2)
       mono_logger (~> 1.0)
       multi_json (~> 1.0)
@@ -267,6 +267,8 @@ GEM
     resque-sentry (1.2.0)
       resque (>= 1.18.0)
       sentry-raven (>= 0.4.6)
+    resque-timeout (1.0.0)
+      resque (~> 1.0)
     rest-client (1.7.2)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
@@ -288,9 +290,10 @@ GEM
       rspec-mocks (~> 3.1.0)
       rspec-support (~> 3.1.0)
     rspec-support (3.1.2)
-    rubocop (0.25.0)
-      parser (>= 2.2.0.pre.4, < 3.0)
-      powerpack (~> 0.0.6)
+    rubocop (0.29.1)
+      astrolabe (~> 1.3)
+      parser (>= 2.2.0.1, < 3.0)
+      powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.4)
     rubocop-rspec (1.2.1)
@@ -298,7 +301,7 @@ GEM
     rufus-scheduler (3.0.9)
       tzinfo
     safe_yaml (1.0.4)
-    sass (3.4.10)
+    sass (3.4.12)
     sass-rails (5.0.1)
       railties (>= 4.0.0, < 5.0)
       sass (~> 3.1)
@@ -402,16 +405,16 @@ DEPENDENCIES
   poltergeist
   rails (= 4.2)
   rails_12factor
-  responders (~> 2.0)
   resque (~> 1.25.0)
   resque-retry
   resque-sentry
+  resque-timeout
   rollbar
   rspec-rails (>= 2.14)
-  rubocop (= 0.25.0)
+  rubocop (= 0.29.1)
   rubocop-rspec
   sass-rails
-  scss-lint
+  scss-lint (= 0.34.0)
   sentry-raven
   shoulda-matchers
   stripe

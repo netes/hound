@@ -1,21 +1,25 @@
+require "attr_extras"
 require "octokit"
 require "base64"
 require "active_support/core_ext/object/with_options"
 
 class GithubApi
-  SERVICES_TEAM_NAME = "Services"
+  ORGANIZATION_TYPE = "Organization"
   PREVIEW_MEDIA_TYPE = "application/vnd.github.moondragon-preview+json"
+
+  attr_reader :file_cache, :token
 
   def initialize(token = ENV["HOUND_GITHUB_TOKEN"])
     @token = token
+    @file_cache = {}
   end
 
   def client
-    @client ||= Octokit::Client.new(access_token: @token, auto_paginate: true)
+    @client ||= Octokit::Client.new(access_token: token, auto_paginate: true)
   end
 
   def repos
-    user_repos + org_repos
+    user_repos + repos_from_all_orgs
   end
 
   def repo(repo_name)
@@ -62,10 +66,7 @@ class GithubApi
   end
 
   def pull_request_comments(full_repo_name, pull_request_number)
-    repo_path = Octokit::Repository.path full_repo_name
-
-    # client.pull_request_comments does not do auto-pagination.
-    client.paginate "#{repo_path}/pulls/#{pull_request_number}/comments"
+    client.pull_request_comments(full_repo_name, pull_request_number)
   end
 
   def commit_comments(full_repo_name, commit_sha)
@@ -81,7 +82,8 @@ class GithubApi
   end
 
   def file_contents(full_repo_name, filename, sha)
-    client.contents(full_repo_name, path: filename, ref: sha)
+    file_cache["#{full_repo_name}/#{sha}/#{filename}"] ||=
+      client.contents(full_repo_name, path: filename, ref: sha)
   end
 
   def accept_pending_invitations
@@ -143,6 +145,10 @@ class GithubApi
     client.add_collaborator(repo_name, username)
   end
 
+  def remove_collaborator(repo_name, username)
+    client.remove_collaborator(repo_name, username)
+  end
+
   def user_teams
     client.user_teams
   end
@@ -153,6 +159,10 @@ class GithubApi
 
   def org_teams(org_name)
     client.org_teams(org_name)
+  end
+
+  def team_repos(team_id)
+    client.team_repos(team_id)
   end
 
   def create_team(team_name:, org_name:, repo_name:)
@@ -168,8 +178,16 @@ class GithubApi
     client.add_team_repository(team_id, repo_name)
   end
 
-  def add_user_to_team(username, team_id)
+  def remove_repo_from_team(team_id, repo_name)
+    client.remove_team_repository(team_id, repo_name)
+  end
+
+  def add_user_to_team(team_id, username)
     client.add_team_membership(team_id, username)
+  end
+
+  def remove_user_from_team(team_id, username)
+    client.remove_team_membership(team_id, username)
   end
 
   def update_team(team_id, options)
@@ -182,12 +200,14 @@ class GithubApi
     authorized_repos(client.repos)
   end
 
-  def org_repos
-    repos = orgs.flat_map do |org|
-      client.org_repos(org[:login])
+  def repos_from_all_orgs
+    orgs.flat_map do |org|
+      org_repos(org[:login])
     end
+  end
 
-    authorized_repos(repos)
+  def org_repos(name)
+    authorized_repos(client.org_repos(name))
   end
 
   def orgs

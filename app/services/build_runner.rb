@@ -1,4 +1,6 @@
 class BuildRunner
+  MAX_COMMENTS = ENV.fetch("MAX_COMMENTS").to_i
+
   pattr_initialize :payload
 
   def run
@@ -14,6 +16,7 @@ class BuildRunner
         Commenter.new(commit).comment_on_violations(priority_violations(violations))
       end
       create_success_status
+      upsert_owner
       track_subscribed_build_completed
     end
   end
@@ -27,11 +30,11 @@ class BuildRunner
   end
 
   def event
-    @event ||= Event.new_from_payload(payload, ENV["HOUND_GITHUB_TOKEN"])
+    @event ||= Event.new_from_payload(payload)
   end
 
   def priority_violations(violations)
-    violations.take(ENV["MAX_COMMENTS"].to_i)
+    violations.take(MAX_COMMENTS)
   end
 
   def repo
@@ -71,7 +74,15 @@ class BuildRunner
     )
   end
 
+  def upsert_owner
+    Owner.upsert(
+      github_id: payload.repository_owner_id,
+      name: payload.repository_owner_name,
+      organization: payload.repository_owner_is_organization?
+    )
+  end
+
   def github
-    @github ||= GithubApi.new
+    @github ||= GithubApi.new(ENV["HOUND_GITHUB_TOKEN"])
   end
 end

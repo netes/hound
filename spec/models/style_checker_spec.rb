@@ -6,7 +6,7 @@ describe StyleChecker, "#violations" do
     violated_file = stub_commit_file("bad.rb", "def bad( a ); a; end  ")
     commit = stub_commit(files: [stylish_file, violated_file])
     expected_violations =
-      ['Space inside parentheses detected.', 'Trailing whitespace detected.']
+      ['Unnecessary spacing detected.', 'Space inside parentheses detected.', 'Trailing whitespace detected.']
 
     violation_messages = StyleChecker.new(commit, stub_repo_config).violations.
       flat_map(&:messages)
@@ -22,8 +22,10 @@ describe StyleChecker, "#violations" do
 
         violations = StyleChecker.new(commit, stub_repo_config).violations
         messages = violations.flat_map(&:messages)
+        expected_violations = ["Unnecessary spacing detected.",
+                               "Trailing whitespace detected."]
 
-        expect(messages).to eq ["Trailing whitespace detected."]
+        expect(messages).to eq expected_violations
       end
     end
 
@@ -247,7 +249,7 @@ describe StyleChecker, "#violations" do
   def stub_commit(file_contents: {}, **options)
     defaults = {
       file_content: "",
-      repository_owner: "some_org",
+      repository_owner_name: "some_org",
       files: []
     }
 

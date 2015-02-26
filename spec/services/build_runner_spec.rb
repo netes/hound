@@ -42,8 +42,9 @@ describe BuildRunner, '#run' do
     end
 
     it "comments a maximum number of times" do
-      allow(ENV).to receive(:[]).with("MAX_COMMENTS").and_return("1")
-      allow(ENV).to receive(:[]).with("HOUND_GITHUB_TOKEN").and_return("1")
+      allow(ENV).to receive(:[]).with("HOUND_GITHUB_TOKEN").
+        and_return("something")
+      stub_const("::BuildRunner::MAX_COMMENTS", 1)
       build_runner = make_build_runner
       stubbed_commenter
       violations = build_list(:violation, 2)
@@ -55,7 +56,7 @@ describe BuildRunner, '#run' do
       build_runner.run
 
       expect(commenter).to have_received(:comment_on_violations).
-        with(violations.take(ENV["MAX_COMMENTS"].to_i))
+        with(violations.take(BuildRunner::MAX_COMMENTS))
     end
 
     it 'initializes StyleChecker with commits and config' do
@@ -84,7 +85,7 @@ describe BuildRunner, '#run' do
 
       build_runner.run
 
-      expect(PullRequest).to have_received(:new).with(payload, ENV["HOUND_GITHUB_TOKEN"])
+      expect(PullRequest).to have_received(:new).with(payload)
     end
 
     it "creates GitHub statuses" do
@@ -111,6 +112,34 @@ describe BuildRunner, '#run' do
         "test/repo",
         "headsha",
         "Hound has reviewed the changes."
+      )
+    end
+
+    it "upserts repository owner" do
+      owner_github_id = 56789
+      owner_name = "john"
+      repo = create(:repo, :active, github_id: 123)
+      payload = stubbed_payload(
+        github_repo_id: repo.github_id,
+        full_repo_name: "test/repo",
+        head_sha: "headsha",
+        repository_owner_id: owner_github_id,
+        repository_owner_name: owner_name,
+        repository_owner_is_organization?: true,
+      )
+      allow(Owner).to receive(:upsert)
+      build_runner = BuildRunner.new(payload)
+      stubbed_pull_request
+      stubbed_style_checker_with_violations
+      stubbed_commenter
+      stubbed_github_api
+
+      build_runner.run
+
+      expect(Owner).to have_received(:upsert).with(
+        github_id: owner_github_id,
+        name: owner_name,
+        organization: true
       )
     end
   end
@@ -175,7 +204,10 @@ describe BuildRunner, '#run' do
       pull_request_number: 123,
       head_sha: "somesha",
       full_repo_name: "foo/bar",
-      pull_request?: true
+      pull_request?: true,
+      repository_owner_id: 456,
+      repository_owner_name: "foo",
+      repository_owner_is_organization?: true,
     }
     double("Payload", defaults.merge(options))
   end

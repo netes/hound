@@ -1,5 +1,5 @@
 class Event
-  pattr_initialize :payload, :github_token
+  pattr_initialize :payload
 
   def relevant?
     commits.any? && config.enabled_for?(name)
@@ -15,22 +15,22 @@ class Event
     @config ||= RepoConfig.new(head_commit)
   end
 
-  def repository_owner
-    payload.repository_owner
+  def repository_owner_name
+    payload.repository_owner_name
   end
 
   private
 
   def api
-    @api ||= GithubApi.new(@github_token)
+    @api ||= GithubApi.new(ENV["HOUND_GITHUB_TOKEN"])
   end
 
   def full_repo_name
     payload.full_repo_name
   end
 
-  def self.new_from_payload(payload, github_token)
-    (payload.pull_request? ? PullRequest : Push).new(payload, github_token)
+  def self.new_from_payload(payload)
+    (payload.pull_request? ? PullRequest : Push).new(payload)
   end
 
   def name

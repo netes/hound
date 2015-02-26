@@ -1,7 +1,10 @@
 class RepoActivator
+  attr_reader :errors
+
   def initialize(github_token:, repo:)
     @github_token = github_token
     @repo = repo
+    @errors = []
   end
 
   def activate
@@ -9,9 +12,7 @@ class RepoActivator
   end
 
   def deactivate
-    change_repository_state_quietly do
-      delete_webhook && repo.deactivate
-    end
+    deactivate_repo
   end
 
   private
@@ -24,11 +25,22 @@ class RepoActivator
     end
   end
 
+  def deactivate_repo
+    change_repository_state_quietly do
+      remove_hound_from_repo && delete_webhook && repo.deactivate
+    end
+  end
+
   def change_repository_state_quietly
     yield
   rescue Octokit::Error => error
+    add_error(error)
     Rollbar.log(error)
     false
+  end
+
+  def remove_hound_from_repo
+    RemoveHoundFromRepo.run(repo.full_github_name, github)
   end
 
   def add_hound_to_repo
@@ -47,7 +59,7 @@ class RepoActivator
 
   def enqueue_org_invitation
     if repo.in_organization?
-      JobQueue.push(OrgInvitationJob)
+      AcceptOrgInvitationsJob.perform_later
     end
   end
 
@@ -67,5 +79,10 @@ class RepoActivator
     else
       "http"
     end
+  end
+
+  def add_error(error)
+    error_message = ErrorMessageTranslation.from_error_response(error)
+    errors.push(error_message).compact!
   end
 end

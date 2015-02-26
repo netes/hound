@@ -23,11 +23,11 @@ describe CreditCardsController, "#update" do
     end
 
     it "captures exception" do
-      allow(Raven).to receive(:capture_exception)
+      allow(Rollbar).to receive(:log)
 
       request_credit_card_update_and_fail
 
-      expect(Raven).to have_received(:capture_exception).
+      expect(Rollbar).to have_received(:log).
         with(kind_of(CreditCardsController::CreditCardUpdateFailed))
     end
   end

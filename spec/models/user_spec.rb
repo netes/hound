@@ -4,6 +4,7 @@ describe User do
   it { should have_many(:repos).through(:memberships) }
   it { should have_many(:subscribed_repos).through(:subscriptions) }
   it { should validate_presence_of :github_username }
+  it { should have_many(:memberships).dependent(:destroy) }
 
   describe ".subscribed_repos" do
     it "returns subscribed repos" do
@@ -15,28 +16,6 @@ describe User do
       repos = user.subscribed_repos
 
       expect(repos).to eq [active_subscription.repo]
-    end
-  end
-
-  describe ".set_refreshing_repos" do
-    it "sets refreshing_repos to true" do
-      user = create(:user)
-
-      User.set_refreshing_repos(user.id)
-
-      expect(user.reload).to be_refreshing_repos
-    end
-
-    it "return true if refreshing_repos was false" do
-      user = create(:user)
-
-      expect(User.set_refreshing_repos(user.id)).to be true
-    end
-
-    it "return false if refreshing_repos was true" do
-      user = create(:user, refreshing_repos: true)
-
-      expect(User.set_refreshing_repos(user.id)).to be false
     end
   end
 

@@ -1,7 +1,7 @@
 class Commit
   pattr_initialize :repo_name, :sha, :github,
-    [:pull_request_number, :repository_owner]
-  attr_reader :repo_name, :sha, :repository_owner
+    [:pull_request_number, :repository_owner_name]
+  attr_reader :repo_name, :sha, :repository_owner_name
 
   def file_content(filename)
     contents = @github.file_contents(repo_name, filename, sha)
